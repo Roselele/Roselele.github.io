@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Project0: Becoming Friends with Your Camera</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="container">
+    <header class="site-header">
+      <h1>Project 0</h1>
+      <p class="subtitle">Becoming Friends with Your Camera</p>
+    </header>
+    <section>
+      <h2>Part 1: Selfie – Wrong Way vs. Right Way</h2>
+      <div class="image-pair">
+        <figure>
+          <img src="media/selfie_near.jpg" alt="Close-up selfie"/>
+          <figcaption>Too Close: severe distortion</figcaption>
+        </figure>
+        <figure>
+          <img src="media/selfie_far.jpg" alt="Distant selfie"/>
+          <figcaption>Far Away: natural look</figcaption>
+        </figure>
+      </div>
+      <p>
+        When taking a close-up selfie, the distance between camera and nose is much shorter compared to the distance between camera and side of the face, causing a significant distorting effect.
+        When taking the selfie faraway, that distance difference becomes relatively small, and the distortion is gone.
+      </p>
+    </section>
+    <section>
+      <h2>Part 2: Architectural Perspective Compression</h2>
+      <div class="image-pair">
+        <figure>
+          <img src="media/photo_near.jpg" alt="Object near"/>
+        </figure>
+        <figure>
+          <img src="media/photo_far.jpg" alt="Object far"/>
+        </figure>
+      </div>
+      <div class="image-pair">
+        <figure>
+          <img src="media/photo2_near.jpg" alt="Second object near"/>
+        </figure>
+        <figure>
+          <img src="media/photo2_far.jpg" alt="Second object far"/>
+        </figure>
+      </div>
+      <p>
+        When stepping back and zooming in, the relative distance difference between objects and camera becomes smaller, so the perspective is weaker.
+        The space looks "compressed".
+        We can also understand this through projection. 
+        When we step back, the objects in the previous photo are projecting to a smaller area of camera space, and the diffenrence of their sizes natrually becomes smaller.
+      </p>
+      <figure class="centered">
+        <img src="media/projection.jpg" alt="demonstration of projection" style="width:600px;"/>
+      </figure>
+
+    </section>
+    <section>
+      <h2>Part 3: The Dolly Zoom</h2>
+      <figure class="centered">
+        <img src="media/animation2.gif" alt="Dolly Zoom shot" style="width:600px;height:800px;"/>
+      </figure>
+      <p>
+        Dolly zoom uses the space compression effect mensioned above to create an illusion that the background objects are rushing towards the camera. 
+      </p>
+      <figure class="centered">
+        <img src="media/blender_zoom.gif" alt="Dolly Zoom in blender" style="width:300px;"/>
+      </figure>
+      <p>
+        Here is another example made in blender to show the dolly zoom effect.
+      </p>
+    </section>
+  </main>
+</body>
+</html>
