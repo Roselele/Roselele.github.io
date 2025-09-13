@@ -1,0 +1,4 @@
+Image: emir.tif
+reference: blue channel
+Green channel displacement: (24, 49)
+Red channel displacement: (40, 105)

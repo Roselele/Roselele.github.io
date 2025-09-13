@@ -1,0 +1,4 @@
+Image: three_generations.tif
+reference: blue channel
+Green channel displacement: (14, 53)
+Red channel displacement: (10, 111)

@@ -1,0 +1,4 @@
+Image: siren.tif
+reference: blue channel
+Green channel displacement: (-7, 49)
+Red channel displacement: (-25, 95)

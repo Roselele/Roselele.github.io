@@ -1,0 +1,4 @@
+Image: monastery.jpg
+reference: blue channel
+Green channel displacement: (2, -3)
+Red channel displacement: (2, 3)

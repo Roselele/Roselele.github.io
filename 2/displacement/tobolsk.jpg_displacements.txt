@@ -1,0 +1,4 @@
+Image: tobolsk.jpg
+reference: blue channel
+Green channel displacement: (2, 3)
+Red channel displacement: (3, 6)

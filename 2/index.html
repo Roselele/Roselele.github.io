@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Project0: Becoming Friends with Your Camera</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <main class="container">
+      <header class="site-header">
+        <h1>Project 1</h1>
+        <p class="subtitle">Images of the Russian Empire: Colorizing the Prokudin-Gorskii photo collection</p>
+      </header>
+      <section>
+        <h2>Introduction</h2>
+        <p>
+            This project involves aligning and colorizing the Prokudin-Gorskii photo collection by analyzing
+            the displacement between color channels. The algorithm automatically finds the optimal alignment
+            for each channel to create a coherent color image. 
+        </p>
+
+      <section>
+        <h2>Explanation for the algorithm</h2>
+        <p> 
+            Mainly two metric functions are used for alignment: Normalized Cross-Correlation (NCC) and a gradient metric.
+            L2 distance works well for small images but fails on tifs. For simplicity, I used NCC metric to align most of the images.
+            <figure class="figure-center">
+                <img src="procedure/bad_L2.png" alt="bad_L2" >
+            </figure>
+            <br>
+            Here's a brief explanation of each metric function:
+
+            <ul>
+                <li><b>L2 Distance:</b> This function computes the square root of the sum of squared differences (Euclidean distance) between two image patches. It measures pixel-wise differences and is sensitive to changes in brightness and contrast.</li>
+                <li><b>Normalized Cross-Correlation (NCC):</b> Measures the similarity between two channels by normalizing their cross-correlation. This approach is robust to linear brightness and contrast variations across channels, making it suitable for aligning channels with different exposure levels.</li>
+                <li><b>Gradient NCC:</b> This function computes the NCC on the gradient magnitude of the images. By focusing on edges and texture rather than absolute intensity values, it can provide better alignment results, especially in cases where intensity vary significantly between channels.</li>
+
+            These functions are the core of the alignment process. They are used to measure the similarity between two image patches. The goal of the alignment algorithm is to find the displacement (dx, dy) that minimizes the distance (for L2) or maximizes the similarity (for NCC, Gradient NCC) between a shifted channel and a reference channel.
+            <br><br>
+            The alignment algorithm first splits the input image into three channels (Blue, Green, Red). For each channel, it searches for the best translation to align the Green and Red channels to the Blue channel. Two main methods are used:<br>
+            <ul>
+                <li><b>Single-Scale Alignment:</b> Searches for the best displacement within a fixed range by comparing normalized cross-correlation (NCC) between cropped regions of the channels.</li>
+                <li><b>Pyramid Alignment:</b> Builds image pyramids for multi-scale alignment, starting from a coarse resolution and refining the displacement at each level. This method is more robust for large images and improves accuracy by gradually increasing the search resolution.</li>
+            </ul>
+            The best displacement for each channel is found by maximizing NCC, and the final color image is constructed by stacking the aligned channels together.
+            
+            <figure>
+                <img src="procedure/procedure.png" alt="procedure" style="width:60%;display:block;margin:auto;">
+            </figure>
+            <br><br>
+            However, NCC metric does not work well on 'emir.tif' as shown below. We can visualize different color channels
+             in grey scale and observe a significant intensity difference of the clothes between channels. Therefore, it's 
+             natural to focus more on the edges instead of absolute intensity values.
+            <figure class="figure-center">
+                <img src="procedure/bad_emir.jpg" alt="bad_emir" >
+            </figure>
+
+            <br> 
+            Here I implemented a gradient-based NCC metric, which computes the NCC on the gradient magnitude of the images. 
+            By focusing on edges and texture rather than absolute intensity values, it can provide better alignment results,
+             especially in cases where intensity vary significantly between channels. This method works well for 
+             'emir.tif' and potentially other images with similar issues.
+        </p>
+        </section>
+        <section>
+        <h2>Result of Given Images</h2>
+        <div class="image-gallery">
+            <!-- Image 1 -->
+             <div class="image-card">
+                <div class="image-container">
+                    <img src="aligned/given/aligned_cathedral.jpg" alt="Image 1">
+                </div>
+                <div class="image-info">
+                    <div class="image-title">cathedral</div>
+                    <div class="displacement">Green: (2, 5)<br>Red: (3, 12)</div>
+                </div>
+            </div>
+
+            <!-- Image 2 -->
+            <div class="image-card">
+                <div class="image-container">
+                    <img src="aligned/given/aligned_church.jpg" alt="Image 2">
+                </div>
+                <div class="image-info">
+                    <div class="image-title">church</div>
+                    <div class="displacement">Green: (4, 25)<br>Red: (-4, 58)</div>
+                </div>
+            </div>
+            
+            <!-- Image 3 -->
+            <div class="image-card">
+                <div class="image-container">
+                    <img src="aligned/given/aligned_emir.jpg" alt="Image 3">
+                </div>
+                <div class="image-info">
+                    <div class="image-title">emir</div>
+                    <div class="displacement">Green: (24, 49)<br>Red: (40, 105)</div>
+                </div>
+            </div>
+            
+            <!-- Image 4 -->
+            <div class="image-card">
+                <div class="image-container">
+                    <img src="aligned/given/aligned_harvesters.jpg" alt="Image 4">
+                </div>
+                <div class="image-info">
+                    <div class="image-title">harvesters</div>
+                    <div class="displacement">Green: (16, 59)<br>Red: (13, 124)</div>
+                </div>
+            </div>
+            
+            <!-- Image 5 -->
+            <div class="image-card">
+                <div class="image-container">
+                    <img src="aligned/given/aligned_icon.jpg" alt="Image 5">
+                </div>
+                <div class="image-info">
+                    <div class="image-title">icon</div>
+                    <div class="displacement">Green: (17, 40)<br>Red: (23, 89)</div>
+                </div>
+            </div>
+            
+            <!-- Image 6 -->
+            <div class="image-card">
+                <div class="image-container">
+                    <img src="aligned/given/aligned_italil.jpg" alt="Image 6">
+                </div>
+                <div class="image-info">
+                    <div class="image-title">italil</div>
+                    <div class="displacement">Green: (21, 38)<br>Red: (35, 76)</div>
+                </div>
+            </div>
+            
+            <!-- Image 7 -->
+            <div class="image-card">
+                <div class="image-container">
+                    <img src="aligned/given/aligned_lastochikino.jpg" alt="Image 7">
+                </div>
+                <div class="image-info">
+                    <div class="image-title">lastochikino</div>
+                    <div class="displacement">Green: (-2, -2)<br>Red: (-8, 75)</div>
+                </div>
+            </div>
+            
+            <!-- Image 8 -->
+            <div class="image-card">
+                <div class="image-container">
+                    <img src="aligned/given/aligned_lugano.jpg" alt="Image 8">
+                </div>
+                <div class="image-info">
+                    <div class="image-title">lugano</div>
+                    <div class="displacement">Green: (-16, 41)<br>Red: (-29, 92)</div>
+                </div>
+            </div>
+            
+            <!-- Image 9 -->
+            <div class="image-card">
+                <div class="image-container">
+                    <img src="aligned/given/aligned_melons.jpg" alt="Image 9">
+                </div>
+                <div class="image-info">
+                    <div class="image-title">melons</div>
+                    <div class="displacement">Green: (9, 82)<br>Red: (12, 178)</div>
+                </div>
+            </div>
+            
+            <!-- Image 10 -->
+            <div class="image-card">
+                <div class="image-container">
+                    <img src="aligned/given/aligned_monastery.jpg" alt="Image 10">
+                </div>
+                <div class="image-info">
+                    <div class="image-title">monastery</div>
+                    <div class="displacement">Green: (2, -3)<br>Red: (2, 3)</div>
+                </div>
+            </div>
+
+            <!-- Image 11 -->
+            <div class="image-card">
+                <div class="image-container">
+                    <img src="aligned/given/aligned_self_portrait.jpg" alt="Image 11">
+                </div>
+                <div class="image-info">
+                    <div class="image-title">self_portrait</div>
+                    <div class="displacement">Green: (28, 78)<br>Red: (36, 176)</div>
+                </div>
+            </div>
+            
+            <!-- Image 12 -->
+            <div class="image-card">
+                <div class="image-container">
+                    <img src="aligned/given/aligned_siren.jpg" alt="Image 12">
+                </div>
+                <div class="image-info">
+                    <div class="image-title">siren</div>
+                    <div class="displacement">Green: (-7, 49)<br>Red: (-25, 95)</div>
+                </div>
+            </div>
+
+            <!-- Image 12 -->
+            <div class="image-card">
+                <div class="image-container">
+                    <img src="aligned/given/aligned_three_generations.jpg" alt="Image 13">
+                </div>
+                <div class="image-info">
+                    <div class="image-title">three_generations</div>
+                    <div class="displacement">Green: (14, 53)<br>Red: (10, 111)</div>
+                </div>
+            </div>
+
+            <!-- Image 12 -->
+            <div class="image-card">
+                <div class="image-container">
+                    <img src="aligned/given/aligned_tobolsk.jpg" alt="Image 12">
+                </div>
+                <div class="image-info">
+                    <div class="image-title">tobolsk</div>
+                    <div class="displacement">Green: (2, 3)<br>Red: (3, 6)</div>
+                </div>
+            </div>
+            
+        </div>
+      </section>
+
+      <section>
+        <h2>Result of Chosen Images</h2>
+        <p>
+          Below are the results of alignment for photos chosen from Prokudin-Gorskii collection.
+           I downloaded the second largest tif version of the photos. pyramid alignment with NCC metric works well for these images.
+        </p>
+        
+        <div class="image-gallery">
+            <!-- Image 11 -->
+            <div class="image-card">
+                <div class="image-container">
+                    <img src="aligned/chosen/aligned_1.jpg" alt="Image 1">
+                </div>
+                <div class="image-info">
+                    <div class="image-title">Na ostrovi︠e︡ Kapri</div>
+                    <div class="displacement">Green: (-16, 32)<br>Red: (-25, 79)</div>
+                </div>
+            </div>
+
+            <!-- Image 2 -->
+            <div class="image-card">
+                <div class="image-container">
+                    <img src="aligned/chosen/aligned_2.jpg" alt="Image 2">
+                </div>
+                <div class="image-info">
+                    <div class="image-title">Vammel'su</div>
+                    <div class="displacement">Green: (24, 11)<br>Red: (46, 99)</div>
+                </div>
+            </div>
+
+            <!-- Image 3 -->
+            <div class="image-card">
+                <div class="image-container">
+                    <img src="aligned/chosen/aligned_3.jpg" alt="Image 3">
+                </div>
+                <div class="image-info">
+                    <div class="image-title">View from the timber mill in the village of Lizhma</div>
+                    <div class="displacement">Green: (0, 35)<br>Red: (-1, 123)</div>
+                </div>
+            </div>
+    </main>
+</body>
+</html>

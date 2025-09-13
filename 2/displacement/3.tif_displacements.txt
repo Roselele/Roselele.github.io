@@ -1,0 +1,4 @@
+Image: 3.tif
+reference: blue channel
+Green channel displacement: (0, 35)
+Red channel displacement: (-1, 123)

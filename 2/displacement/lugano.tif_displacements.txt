@@ -1,0 +1,4 @@
+Image: lugano.tif
+reference: blue channel
+Green channel displacement: (-16, 41)
+Red channel displacement: (-29, 92)

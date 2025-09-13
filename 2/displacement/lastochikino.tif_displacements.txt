@@ -1,0 +1,4 @@
+Image: lastochikino.tif
+reference: blue channel
+Green channel displacement: (-2, -2)
+Red channel displacement: (-8, 75)

@@ -1,0 +1,4 @@
+Image: melons.tif
+reference: blue channel
+Green channel displacement: (9, 82)
+Red channel displacement: (12, 178)

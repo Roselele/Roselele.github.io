@@ -1,0 +1,4 @@
+Image: cathedral.jpg
+reference: blue channel
+Green channel displacement: (2, 5)
+Red channel displacement: (3, 12)

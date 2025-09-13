@@ -1,0 +1,4 @@
+Image: self_portrait.tif
+reference: blue channel
+Green channel displacement: (28, 78)
+Red channel displacement: (36, 176)
