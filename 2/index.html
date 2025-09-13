@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Project0: Becoming Friends with Your Camera</title>
+    <title>Project1: Images of the Russian Empire</title>
     <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -38,7 +38,7 @@
 
             These functions are the core of the alignment process. They are used to measure the similarity between two image patches. The goal of the alignment algorithm is to find the displacement (dx, dy) that minimizes the distance (for L2) or maximizes the similarity (for NCC, Gradient NCC) between a shifted channel and a reference channel.
             <br><br>
-            The alignment algorithm first splits the input image into three channels (Blue, Green, Red). For each channel, it searches for the best translation to align the Green and Red channels to the Blue channel. Two main methods are used:<br>
+            The alignment algorithm first splits the input image into three channels (Blue, Green, Red). Then it crops a predefined length of edges to prevent the extreme intensity of the edges from influencing the similarity analysis. For each channel, it searches for the best translation to align the Green and Red channels to the Blue channel. Two main methods are used:<br>
             <ul>
                 <li><b>Single-Scale Alignment:</b> Searches for the best displacement within a fixed range by comparing normalized cross-correlation (NCC) between cropped regions of the channels.</li>
                 <li><b>Pyramid Alignment:</b> Builds image pyramids for multi-scale alignment, starting from a coarse resolution and refining the displacement at each level. This method is more robust for large images and improves accuracy by gradually increasing the search resolution.</li>
