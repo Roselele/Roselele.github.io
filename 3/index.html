@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Project 2: Fun with Filters and Frequencies</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Project 2: Fun with Filters and Frequencies</h1>
+            <p class="subtitle">Exploring image processing techniques through convolution, edge detection, sharpening, hybrid images, and multi-resolution blending</p>
+        </header>
+        
+        <section id="part1">
+            <h2>Part 1: Fun with Filters</h2>
+            
+            <div id="part1-1">
+                <h3>1.1 Convolutions from Scratch</h3>
+                <p>Implementing convolution with four nested loops and then optimized to two loops, including zero padding. Compared with scipy.signal.convolve2d for validation.</p>
+                
+                <div class="code-snippet">
+def convolve_4(image, filter):
+    filter = np.flipud(np.fliplr(filter))  # flip in convolution
+    kh, kw = filter.shape
+    ih, iw = image.shape
+
+    # zero padding to the image
+    # normally h,w are odd numbers
+    pad_h, pad_w = kh // 2, kw // 2
+    image_padded = np.zeros((ih + 2*pad_h, iw + 2*pad_w))
+
+    if pad_h == 0:
+        image_padded[:, pad_w:-pad_w] = image
+    elif pad_w == 0:
+        image_padded[pad_h:-pad_h, :] = image
+    else:
+        image_padded[pad_h:-pad_h, pad_w:-pad_w] = image
+
+    # naive convolve
+    output = np.zeros_like(image)
+    for i in range(ih):
+        for j in range(iw):
+            for m in range(kh):
+                for n in range(kw):
+                    output[i, j] += image_padded[i + m, j + n] * filter[m, n]
+                    
+    return output
+
+
+def convolve_2(image, filter):
+    filter = np.flipud(np.fliplr(filter))
+    kh, kw = filter.shape
+    ih, iw = image.shape
+    
+    # zero padding
+    pad_h, pad_w = kh // 2, kw // 2    
+    image_padded = np.zeros((ih + 2*pad_h, iw + 2*pad_w))
+
+    if pad_h == 0:
+        image_padded[:, pad_w:-pad_w] = image
+    elif pad_w == 0:
+        image_padded[pad_h:-pad_h, :] = image
+    else:
+        image_padded[pad_h:-pad_h, pad_w:-pad_w] = image
+
+    output = np.zeros_like(image)
+    for i in range(ih):
+        for j in range(iw):
+            output[i, j] = np.sum(image_padded[i:i+kh, j:j+kw] * filter)
+                    
+    return output
+                </div>
+                
+                <div class="image-gallery">
+                    <div class="image-card">
+                        <div class="image-container">
+                            <img src="images/part1_1/selfie_gray.jpg" alt="selfie">
+                        </div>
+                        <div class="image-info">
+                            <div class="image-title">Original Image</div>
+                        </div>
+                    </div>
+                    
+                    <div class="image-card">
+                        <div class="image-container">
+                            <img src="images/part1_1/box_4loops.jpg" alt="4loop">
+                        </div>
+                        <div class="image-info">
+                            <div class="image-title">4 loop box filter</div>
+                        </div>
+                    </div>
+
+                    <div class="image-card">
+                        <div class="image-container">
+                            <img src="images/part1_1/box_2loops.jpg" alt="2loop">
+                        </div>
+                        <div class="image-info">
+                            <div class="image-title">2 loop box filter</div>
+                        </div>
+                    </div>
+
+                    <div class="image-card">
+                        <div class="image-container">
+                            <img src="images/part1_1/box_scipy.jpg" alt="built_in">
+                        </div>
+                        <div class="image-info">
+                            <div class="image-title">scipy box filter</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="image-gallery">
+                    <div class="image-card">
+                        <div class="image-container">
+                            <img src="images/part1_1/dx.jpg" alt="dx">
+                        </div>
+                        <div class="image-info">
+                            <div class="image-title">dx difference operator</div>
+                        </div>
+                    </div>
+                    
+                    <div class="image-card">
+                        <div class="image-container">
+                            <img src="images/part1_1/dy.jpg" alt="4loop">
+                        </div>
+                        <div class="image-info">
+                            <div class="image-title">dx difference operator</div>
+                        </div>
+                    </div>
+            </div>
+            <p>    
+                <br>Here is the time taken for each algorithm and the difference between written and built_in function.
+                <br><br>
+                    convolve_4 (4 loops):   136.543076 sec
+                <br>    convolve_2 (2 loops):   15.658604 sec
+                <br>    scipy.convolve2d:       0.533700 sec
+                <br>Max difference between 4-loops and scipy: 1.4432899320127035e-15
+                <br>Max difference between 2-loops and scipy: 1.2212453270876722e-15
+                <br><br>
+                The performance comparison reveals three distinct optimization levels: the 4-loop implementation as baseline, the 2-loop version showing the power of vectorization through NumPy, and scipy.convolve2d demonstrating peak efficiency achieved through compiled low-level code and advanced algorithmic optimizations.
+                <br>The boundary is handled by zero-padding, we assume that the height and width of the filter is odd to apply it properly. And padding an additional kernel_width//2 (devide by 2 and then floor) will retain the image size.    
+                <br>We can also see the difference of result between different algorithm is negligible, it is primarily caused by floating-point precision artifacts.
+            </p>
+
+            <div id="part1-2">
+                <h3>1.2 Finite Difference Operator</h3>
+                <p>Computed partial derivatives in x and y directions using finite difference operators Dx and Dy, then calculated gradient magnitude and created a binarized edge image.</p>
+                
+                <div class="comparison-container">
+                    <div class="comparison-item">
+                        <img src="images/part1_2/cameraman_dx.jpg" alt="Dx">
+                        <div class="comparison-label">Partial Derivative in X</div>
+                    </div>
+                    <div class="comparison-item">
+                        <img src="images/part1_2/cameraman_dy.jpg" alt="Dy">
+                        <div class="comparison-label">Partial Derivative in Y</div>
+                    </div>
+                    <div class="comparison-item">
+                        <img src="images/part1_2/grad_mag.jpg" alt="Gradient Magnitude">
+                        <div class="comparison-label">Gradient Magnitude</div>
+                    </div>
+                    <div class="comparison-item">
+                        <img src="images/part1_2/final_edges.jpg" alt="Binary Edge">
+                        <div class="comparison-label">Binarized Edge Image</div>
+                    </div>
+                </div>
+
+                <div class = "figure-center">
+                    <img src="images/part1_2/para.png" alt="parameter">
+                        <div class="label">Parameter comparison</div>
+                </div>
+                
+                <p>
+                    <br>
+                    I choose the binarization threshold to be 0.1 to retain the edges of the buildings in the background, andI expect the noise in the water will be blurred out in the next part.
+                </p>
+            </div>
+            <div id="part1-3">
+                <h3>1.3 Derivative of Gaussian (DoG) Filter</h3>
+                <p>Applied Gaussian smoothing to reduce noise before computing derivatives, then created DoG filters by convolving Gaussian with Dx and Dy.</p>
+                
+                <!-- and ends with <div class="methodology">
+                    <p><strong>Methodology:</strong> Created 2D Gaussian filter using cv2.getGaussianKernel(), then convolved with finite difference operators to create DoG filters.</p>
+                </div>-->
+                
+                <div class = "figure-center">
+                    <img src="images/part1_3/filters.png" alt="filters">
+                        <div class="label">Filters</div>
+                </div>
+
+                <div class="comparison-container">
+                    <div class="comparison-item">
+                        <img src="images/part1_2/grad_mag.jpg" alt="original">
+                        <div class="comparison-label">original gradient magnitude</div>
+                    </div>
+                    <div class="comparison-item">
+                        <img src="images/part1_3/grad_mag_one_step.jpg" alt="Gaussian Blurred">
+                        <div class="comparison-label">1-step (blurred)</div>
+                    </div>
+                    <div class="comparison-item">
+                        <img src="images/part1_3/grad_mag_two_step.jpg" alt="DoG X">
+                        <div class="comparison-label">2-step (blurred)</div>
+                    </div>
+                </div>
+
+                <div class = "figure-center">
+                    <img src="images/part1_3//after_DoG.png" alt="fcomparison">
+                        <div class="label">Comparison, w/o blurring</div>
+                </div>
+
+                <div class = "figure-center">
+                    <img src="images/part1_3/para.png" alt="parameter">
+                        <div class="label">Parameter comparison</div>
+                </div>
+
+                <p>
+                    I choose the sigma of gaussian blur to be 1.25 to blur most of the noise in the water and retain slightly more edge information in the background.
+                </p>
+
+            </div>
+            <!--
+            
+            <div class="bells-whistles">
+                <h3><i class="fas fa-star"></i> Bells & Whistles: Gradient Orientation Visualization</h3>
+                <p>Computed image gradient orientations and visualized using HSV color space, with hue representing orientation.</p>
+                <div class="image-gallery">
+                    <div class="image-card">
+                        <div class="image-container">
+                            <img src="images/gradient_orientation.jpg" alt="Gradient Orientation">
+                        </div>
+                        <div class="image-info">
+                            <div class="image-title">Gradient Orientation</div>
+                            <div class="image-description">HSV visualization</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            -->
+        </section>
+        
+        <section id="part2">
+            <h2>Part 2: Fun with Frequencies</h2>
+            
+            <div id="part2-1">
+                <h3>2.1 Image "Sharpening"</h3>
+                <p>Implementing unsharp masking by subtracting Gaussian-blurred image from original to extract high frequencies, then adding them back to enhance sharpness.
+                    Gaussian filter acts as a low-pass filter, so subtracting the blurred result is actually removing the low frequency component and preserving the high frequencies.
+                </p>
+                
+
+                <div class="image-gallery">
+                    <div class="image-card">
+                        <div class="image-container">
+                            <img src="images/part2_1/taj.jpg" alt="Taj Original">
+                        </div>
+                        <div class="image-info">
+                            <div class="image-title">Original Taj Mahal</div>
+                            <div class="image-description">Input image</div>
+                        </div>
+                    </div>
+                    
+                    <div class="image-card">
+                        <div class="image-container">
+                            <img src="images/part2_1/blurred_taj_taj.jpg" alt="Taj Blurred">
+                        </div>
+                        <div class="image-info">
+                            <div class="image-title">Blurred Version</div>
+                            <div class="image-description">After Gaussian blur</div>
+                        </div>
+                    </div>
+                    
+                    <div class="image-card">
+                        <div class="image-container">
+                            <img src="images/part2_1/high_freq_taj.jpg" alt="Taj high">
+                        </div>
+                        <div class="image-info">
+                            <div class="image-title">High frequency</div>
+                            <div class="image-description">original subtract blurred result</div>
+                        </div>
+                    </div>
+
+                    <div class="image-card">
+                        <div class="image-container">
+                            <img src="images/part2_1/sharpened_taj_single.jpg" alt="Taj high">
+                        </div>
+                        <div class="image-info">
+                            <div class="image-title">Sharpened Result</div>
+                            <div class="image-description">After unsharp masking</div>
+                        </div>
+                    </div>
+                </div>
+
+                <p>
+                    <br>Here is the comparison between 2-step and using an unsharp filter.
+                </p>
+
+                <div class="comparison-container">
+                    <div class="comparison-item">
+                        <img src="images/part2_1/sharpened_taj.jpg" alt="finite">
+                        <div class="comparison-label">finite difference method</div>
+                    </div>
+                    <div class="comparison-item">
+                        <img src="images/part2_1/sharpened_taj_single.jpg" alt="single filter">
+                        <div class="comparison-label">single filter</div>
+                    </div>
+                </div>
+                
+                <p>
+                    Here is the comparison for different parameters.
+                </p>
+                <div class = "figure-center">
+                    <img src="images/part2_1/para.png" alt="parameter">
+                        <div class="label">Parameter comparison</div>
+                </div>
+
+                <p>
+                    And another image to test unsharp filter.
+                </p>
+                
+                <div class="image-gallery">
+                    <div class="image-card">
+                        <div class="image-container">
+                            <img src="images/part2_1/flower.jpg" alt="Taj Original">
+                        </div>
+                        <div class="image-info">
+                            <div class="image-title">Original Taj Mahal</div>
+                            <div class="image-description">Input image</div>
+                        </div>
+                    </div>
+                    
+                    <div class="image-card">
+                        <div class="image-container">
+                            <img src="images/part2_1/blurred_flower_flower.jpg" alt="Taj Blurred">
+                        </div>
+                        <div class="image-info">
+                            <div class="image-title">Blurred Version</div>
+                            <div class="image-description">After Gaussian blur</div>
+                        </div>
+                    </div>
+                    
+                    <div class="image-card">
+                        <div class="image-container">
+                            <img src="images/part2_1/high_freq_flower.jpg" alt="Flower high">
+                        </div>
+                        <div class="image-info">
+                            <div class="image-title">High frequency</div>
+                            <div class="image-description">original subtract blurred result</div>
+                        </div>
+                    </div>
+
+                    <div class="image-card">
+                        <div class="image-container">
+                            <img src="images/part2_1/sharpened_flower_single.jpg" alt="Flower high">
+                        </div>
+                        <div class="image-info">
+                            <div class="image-title">Sharpened Result</div>
+                            <div class="image-description">After unsharp masking</div>
+                        </div>
+                    </div>
+                </div>
+
+                
+            
+
+
+
+            </div>
+            
+            <div id="part2-2">
+                <h3>2.2 Hybrid Images</h3>
+                <p>Created hybrid images by blending high-frequency components of one image with low-frequency components of another, resulting in images that change interpretation with viewing distance.</p>
+                
+                <div class = "figure-center">
+                    <img src="images/part2_2/man_cat_result.png" alt="example result">
+                        <div class="label">example result</div>
+                </div>
+                <div class = "figure-center">
+                    <img src="images/part2_2/man_cat.png" alt="example result visualization">
+                        <div class="label">example result visualization</div>
+                </div>
+
+                <div class = "figure-center">
+                    <img src="images/part2_2/hybrid1_result.png" alt="hybrid image 1">
+                        <div class="label">hybrid image 1</div>
+                </div>
+                <div class = "figure-center">
+                    <img src="images/part2_2/hybrid1.png" alt="hybrid image 1 visualization">
+                        <div class="label">hybrid image 1 visualization</div>
+                </div>
+
+                <div class = "figure-center">
+                    <img src="images/part2_2/hybrid2_result.png" alt="hybrid image 2">
+                        <div class="label">hybrid image 2</div>
+                </div>
+                
+                <!--<div class="bells-whistles">
+                    <h3><i class="fas fa-star"></i> Bells & Whistles: Color Enhancement</h3>
+                    <p>Explored using color for high-frequency component, low-frequency component, or both to enhance the hybrid image effect.</p>
+                    <div class="image-gallery">
+                        <div class="image-card">
+                            <div class="image-container">
+                                <img src="images/hybrid_color.jpg" alt="Color Hybrid">
+                            </div>
+                            <div class="image-info">
+                                <div class="image-title">Color-Enhanced Hybrid</div>
+                                <div class="image-description">Using color in both components</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                -->
+
+            </div>
+            
+            <div id="part2-3">
+                <h3>2.3 Gaussian and Laplacian Stacks</h3>
+                <p>Implementing Gaussian and Laplacian stacks without downsampling.</p>
+                
+
+                <div class = "figure-center">
+                    <img src="images/part2_3/stack_visualization.png" alt="stack_visualization">
+                        <div class="label">stack_visualization</div>
+                </div>
+                
+
+                <div class="comparison-container">
+                    <div class="comparison-item">
+                        <img src="images/part2_3/reconstructed_apple.jpg" alt="reconstructed_apple">
+                        <div class="comparison-label">reconstructed_apple</div>
+                    </div>
+                    <div class="comparison-item">
+                        <img src="images/part2_3/reconstructed_orange.jpg" alt="reconstructed_orange">
+                        <div class="comparison-label">reconstructed_orange</div>
+                    </div>
+                </div>
+            
+            <div id="part2-4">
+                <h3>2.4 Multiresolution Blending</h3>
+                <p>Blended images seamlessly using multi-resolution blending with Gaussian stacks and laplacian stacks for the mask and input images, creating smooth transitions.</p>
+                
+
+                <div class = "figure-center">
+                    <img src="images/part2_4/oraple_process.png" alt="oraple_process">
+                        <div class="label">oraple_process</div>
+                </div>
+                <div class = "figure-center">
+                    <img src="images/part2_4/chosen.png"" alt="chosen image result">
+                        <div class="label">another multi-resolution blend</div>
+                </div>
+
+                <p>
+                    <br>The irregular blending uses an oval mask.
+                </p>
+
+                <div class = "figure-center">
+                    <img src="images/part2_4/irregular.png"" alt="irregular multi-resolution blend">
+                        <div class="label">irregular multi-resolution blend</div>
+                </div>
+
+                <p>
+                    <br>We can see that the multi-resolution blending is giving more natural blending edges, 
+                    but the shape of the mask does not match the monkey perfectly and there are still some 
+                    artifacts caused by the different colors around the edges. So I subtracted two oval areas 
+                    from the original mask to create a better mask.
+                </p>
+                <div class = "figure-center">
+                    <img src="images/part2_4/irregular_bettermask.png"" alt="blend with better mask">
+                        <div class="label">blend with better mask</div>
+                </div>
+
+            </div>
+        </section>
+        
+        
+        <!--
+        <footer>
+            <p>CS180 Project 2: Fun with Filters and Frequencies &copy; 2025</p>
+        </footer>
+        -->
+
+    </div>
+
+    <script>
+        // 添加简单的页面加载动画
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('section');
+            
+            sections.forEach((section, index) => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    section.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    section.style.opacity = '1';
+                    section.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+        });
+    </script>
+</body>
+</html>

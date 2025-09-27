@@ -1,18 +1,258 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>My Portfolio</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS180 projects</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;500&display=swap" rel="stylesheet">
     <style>
+        :root {
+            /* Colors */
+            --color-bg: #f9f9f9;
+            --color-text: #333;
+            --color-accent: #2a9d8f;
+            --color-muted: #666;
+            /* Spacing */
+            --space-xs: 4px;
+            --space-sm: 8px;
+            --space-md: 16px;
+            --space-lg: 32px;
+            --space-xl: 64px;
+            /* Radius & shadow */
+            --radius: 6px;
+            --shadow: rgba(0,0,0,0.1) 0px 4px 12px;
+            --shadow-hover: rgba(0,0,0,0.2) 0px 6px 18px;
+            /* Typo */
+            --font-body: 'Open Sans', sans-serif;
+            --font-heading: 'Montserrat', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+            font-family: var(--font-body);
+            background: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+            -webkit-text-size-adjust: 100%;
+            min-height: 100vh;
+            padding: var(--space-md);
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            margin: auto;
+            padding: var(--space-lg) var(--space-md);
+            transition: padding 0.3s ease;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: var(--space-lg);
+        }
+
+        h1 {
+            font-family: var(--font-heading);
+            font-size: 2.5rem;
+            color: var(--color-accent);
+            margin-bottom: var(--space-sm);
+            transition: font-size 0.3s ease;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--color-muted);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .projects-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: var(--space-lg);
+            margin-top: var(--space-xl);
+        }
+
+        .project-card {
+            background: white;
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .project-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .project-header {
+            background: var(--color-accent);
+            color: white;
+            padding: var(--space-lg);
+            text-align: center;
+        }
+
+        .project-title {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            margin-bottom: var(--space-xs);
+        }
+
+        .project-number {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .project-content {
+            padding: var(--space-lg);
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .project-description {
+            margin-bottom: var(--space-lg);
+            color: var(--color-muted);
+            flex-grow: 1;
+        }
+
+        .project-link {
+            display: inline-block;
+            background: var(--color-accent);
+            color: white;
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius);
+            text-decoration: none;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s ease;
+            align-self: flex-start;
+        }
+
+        .project-link:hover {
+            background: #238277; /* 稍微深一点的强调色 */
+            transform: scale(1.05);
+        }
+
+        .project-link i {
+            margin-left: var(--space-xs);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: var(--space-xl);
+            padding: var(--space-lg);
+            color: var(--color-muted);
+            font-size: 0.9rem;
+        }
+
+        /* —— 响应式调整 —— */
+        @media (max-width: 768px) {
+            .container {
+                padding: var(--space-md) var(--space-sm);
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+            
+            .projects-container {
+                grid-template-columns: 1fr;
+                gap: var(--space-md);
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.75rem;
+            }
+            
+            .subtitle {
+                font-size: 0.9rem;
+            }
+            
+            .container {
+                padding: var(--space-md) var(--space-xs);
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Welcome to My CS180 Portfolio!</h1>
-    <a href="./1/index.html">Project 0</a>
-    <br>
-    <a href="./2/index.html">Project 1</a>
+    <div class="container">
+        <header>
+            <h1>CS180 Project Collection</h1>
+            <p class="subtitle">A collection of projects completed during my CS180 course.</p>
+        </header>
+        
+        <div class="projects-container">
+            <div class="project-card">
+                <div class="project-header">
+                    <h2 class="project-title">Project 0</h2>
+                    <div class="project-number">Becoming Friends with Your Camera</div>
+                </div>
+                <div class="project-content">
+                    <p class="project-description">Distance and distortion. Dolly zoom.</p>
+                    <a href="./1/index.html" class="project-link">View Project <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+            
+            <div class="project-card">
+                <div class="project-header">
+                    <h2 class="project-title">Project 1</h2>
+                    <div class="project-number">Colorizing the Prokudin-Gorskii photo collection</div>
+                </div>
+                <div class="project-content">
+                    <p class="project-description">RGB channel alignment.</p>
+                    <a href="./2/index.html" class="project-link">View Project <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+            
+            <div class="project-card">
+                <div class="project-header">
+                    <h2 class="project-title">Project 2</h2>
+                    <div class="project-number">Fun with Filters and Frequencies!</div>
+                </div>
+                <div class="project-content">
+                    <p class="project-description">Filter. Hybrid image.</p>
+                    <a href="./3/index.html" class="project-link">View Project <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>CS180 Portfolio &copy; 2023 | Created with HTML, CSS, and JavaScript</p>
+        </footer>
+    </div>
+
+    <script>
+        // 添加简单的页面加载动画
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.project-card');
+            
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+        });
+    </script>
 </body>
 </html>
