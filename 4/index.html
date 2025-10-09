@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Project 3A: Image Warping and Mosaicing</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Project 3A: Image Warping and Mosaicing</h1>
+            <p class="subtitle">Exploring image warping, homography recovery, and mosaic creation through projective transformations</p>
+        </header>
+        
+        <section id="part1">
+            <h2>A.1: Shoot and Pictures</h2>
+            <p>In this subpart, we capture sets of two images which have the same center of projection.
+                 So for the overlapping part of the two images, they are capturing the exact same bunch of rays. 
+                 We can then use a homography matrix to warp one image to make it look as if it were taken from the 
+                 same angle of the second one.</p>
+            
+            <div class="image-gallery">
+                <div class="image-card">
+                    <div class="image-container">
+                        <img src="images/a/1.jpg" alt="Image Set 1 - Image 1">
+                    </div>
+                    <div class="image-info">
+                        <div class="image-title">Set 1 - Image 1</div>
+                    </div>
+                </div>
+                
+                <div class="image-card">
+                    <div class="image-container">
+                        <img src="images/a/2.jpg" alt="Image Set 1 - Image 2">
+                    </div>
+                    <div class="image-info">
+                        <div class="image-title">Set 1 - Image 2</div>
+                    </div>
+                </div>
+
+                <div class="image-card">
+                    <div class="image-container">
+                        <img src="images/c/1.jpg" alt="Image Set 2 - Image 1">
+                    </div>
+                    <div class="image-info">
+                        <div class="image-title">Set 2 - Image 1</div>
+                    </div>
+                </div>
+
+                <div class="image-card">
+                    <div class="image-container">
+                        <img src="images/c/2.jpg" alt="Image Set 2 - Image 2">
+                    </div>
+                    <div class="image-info">
+                        <div class="image-title">Set 2 - Image 2</div>
+                    </div>
+                </div>
+
+                <div class="image-card">
+                    <div class="image-container">
+                        <img src="images/d/1.jpg" alt="Image Set 3 - Image 1">
+                    </div>
+                    <div class="image-info">
+                        <div class="image-title">Set 3 - Image 1</div>
+                    </div>
+                </div>
+
+                <div class="image-card">
+                    <div class="image-container">
+                        <img src="images/d/2.jpg" alt="Image Set 3 - Image 2">
+                    </div>
+                    <div class="image-info">
+                        <div class="image-title">Set 3 - Image 2</div>
+                    </div>
+                </div>
+
+            </div>
+            
+        </section>
+        
+        <section id="part2">
+            <h2>A.2: Recover Homographies</h2>
+            <p>In this subpart, we compute the transformation matrix, i.e. the homography matrix with 8 DoF,
+                by constructing and solving a linear system of equations from a set of corresponding points.</p>
+
+            <p>At least four corresponding points are required to recover the homography matrix because each 
+                point provides x and y coordinate information which is 2 DoF and we need to solve 8 unknowns 
+                in total.</p>
+                
+            <p>However when we implement the recovery in practice, we find that even some small deviation of the coordinates 
+                can leads to huge error when the matrix is uniquely solved from the 4 corresponding points. The warping and mosaic result
+                appears to be rather unsatisfying.</p>
+                
+            <p>So on the second trial, I selected 8 points to recover a better estimate of the projection transformation. The 
+                linear equation solver will return the least square result in this case which gives a much more robust solution. And the warping and
+                mosaic created by this new homography matrix is much better.</p>
+                
+            <h3>Methodology</h3>
+            
+            <div class="methodology">
+                <p><strong>Step 1:</strong> Use matplotlib tool to manually choose a set of corresponding points on two images.</p>
+                <p><strong>Step 2:</strong> Create the linear equation λ[u,v,1] = H[x,y,1], extend the matrix to equations and simplify by eliminating λ, 
+                 now we get 2 equations for each corresponding point containing the coordinate of the points.</p>
+                <p><strong>Step 3:</strong> Use linear equation solver to get the terms in the matrix.</p>
+            </div>
+
+
+            <p><br>We will show exactly how the method is implemented to transform points from image1 to 
+                corresponding points on image2.<br></p>
+            <h3>Point Correspondences</h3>
+            
+            
+                
+            <p><strong>Step 1:</strong> Use the tool, get the coordinate of corresponding points.</p>
+            
+            <div class="comparison-container">
+                <div>
+                    <h4>Points in Image 1</h4>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Point #</th>
+                                <th>X Coordinate</th>
+                                <th>Y Coordinate</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>933.42</td>
+                                <td>1046.41</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>617.89</td>
+                                <td>1228.80</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>720.02</td>
+                                <td>1416.66</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>980.84</td>
+                                <td>1285.34</td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>1112.16</td>
+                                <td>1223.32</td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td>1108.51</td>
+                                <td>1017.23</td>
+                            </tr>
+                            <tr>
+                                <td>7</td>
+                                <td>1152.28</td>
+                                <td>548.49</td>
+                            </tr>
+                            <tr>
+                                <td>8</td>
+                                <td>783.86</td>
+                                <td>610.50</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div>
+                    <h4>Points in Image 2</h4>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Point #</th>
+                                <th>X Coordinate</th>
+                                <th>Y Coordinate</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>511.55</td>
+                                <td>1064.65</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>172.31</td>
+                                <td>1259.80</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>274.45</td>
+                                <td>1434.89</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>540.74</td>
+                                <td>1299.93</td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>677.53</td>
+                                <td>1225.15</td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td>675.70</td>
+                                <td>1026.34</td>
+                            </tr>
+                            <tr>
+                                <td>7</td>
+                                <td>730.42</td>
+                                <td>597.73</td>
+                            </tr>
+                            <tr>
+                                <td>8</td>
+                                <td>382.06</td>
+                                <td>619.62</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <h3>Linear Equations</h3>
+            
+            <p><strong>Step 2:</strong> Construct the equations:</p>
+            
+            <div class="math-container">
+                <p>Homography matrix elements: h<sub>00</sub>, h<sub>01</sub>, h<sub>02</sub>, h<sub>10</sub>, h<sub>11</sub>, h<sub>12</sub>, h<sub>20</sub>, h<sub>21</sub>, h<sub>22</sub></p>
+                
+                <div class="code-block">
+                    <span class="comment"># Point 1:</span><br>
+                    <span class="comment"># Equation 1:</span><br>
+                    -933.4*h00 - 1046.4*h01 - 1*h02 + 477494.4*h20 + 535294.1*h21 + 511.6*h22 = 0<br>
+                    <span class="comment"># Equation 2:</span><br>
+                    -933.4*h10 - 1046.4*h11 - 1*h12 + 993760.8*h20 + 1114053.5*h21 + 1064.6*h22 = 0<br>
+                    <br>
+                    <span class="comment"># Point 2:</span><br>
+                    <span class="comment"># Equation 1:</span><br>
+                    -617.9*h00 - 1228.8*h01 - 1*h02 + 106469.7*h20 + 211736.8*h21 + 172.3*h22 = 0<br>
+                    <span class="comment"># Equation 2:</span><br>
+                    -617.9*h10 - 1228.8*h11 - 1*h12 + 778415.6*h20 + 1548038.0*h21 + 1259.8*h22 = 0<br>
+                    <br>
+                    <span class="comment"># Point 3:</span><br>
+                    <span class="comment"># Equation 1:</span><br>
+                    -720.0*h00 - 1416.7*h01 - 1*h02 + 197610.7*h20 + 388800.6*h21 + 274.4*h22 = 0<br>
+                    <span class="comment"># Equation 2:</span><br>
+                    -720.0*h10 - 1416.7*h11 - 1*h12 + 1033159.3*h20 + 2032749.5*h21 + 1434.9*h22 = 0<br>
+                    <br>
+                    <span class="comment"># Point 4:</span><br>
+                    <span class="comment"># Equation 1:</span><br>
+                    -980.8*h00 - 1285.3*h01 - 1*h02 + 530375.7*h20 + 695027.6*h21 + 540.7*h22 = 0<br>
+                    <span class="comment"># Equation 2:</span><br>
+                    -980.8*h10 - 1285.3*h11 - 1*h12 + 1275019.8*h20 + 1670842.1*h21 + 1299.9*h22 = 0<br>
+                    <br>
+                    <span class="comment"># Point 5:</span><br>
+                    <span class="comment"># Equation 1:</span><br>
+                    -1112.2*h00 - 1223.3*h01 - 1*h02 + 753518.2*h20 + 828835.2*h21 + 677.5*h22 = 0<br>
+                    <span class="comment"># Equation 2:</span><br>
+                    -1112.2*h10 - 1223.3*h11 - 1*h12 + 1362559.1*h20 + 1498752.1*h21 + 1225.1*h22 = 0<br>
+                    <br>
+                    <span class="comment"># Point 6:</span><br>
+                    <span class="comment"># Equation 1:</span><br>
+                    -1108.5*h00 - 1017.2*h01 - 1*h02 + 749025.0*h20 + 687342.6*h21 + 675.7*h22 = 0<br>
+                    <span class="comment"># Equation 2:</span><br>
+                    -1108.5*h10 - 1017.2*h11 - 1*h12 + 1137714.7*h20 + 1044023.6*h21 + 1026.3*h22 = 0<br>
+                    <br>
+                    <span class="comment"># Point 7:</span><br>
+                    <span class="comment"># Equation 1:</span><br>
+                    -1152.3*h00 - 548.5*h01 - 1*h02 + 841651.5*h20 + 400626.5*h21 + 730.4*h22 = 0<br>
+                    <span class="comment"># Equation 2:</span><br>
+                    -1152.3*h10 - 548.5*h11 - 1*h12 + 688758.2*h20 + 327849.2*h21 + 597.7*h22 = 0<br>
+                    <br>
+                    <span class="comment"># Point 8:</span><br>
+                    <span class="comment"># Equation 1:</span><br>
+                    -783.9*h00 - 610.5*h01 - 1*h02 + 299480.8*h20 + 233246.8*h21 + 382.1*h22 = 0<br>
+                    <span class="comment"># Equation 2:</span><br>
+                    -783.9*h10 - 610.5*h11 - 1*h12 + 485695.2*h20 + 378277.5*h21 + 619.6*h22 = 0<br>
+                    <br>
+                </div>
+            </div>
+            
+            <h3>Homography Matrix</h3>
+            
+            <p><strong>Step 3:</strong> Solve for the 8 unknowns and recover the homography matrix. After normalization (H[2,2] = 1):</p>
+            
+            <div class="math-container">
+                <table class="data-table" style="width: auto; margin: 0 auto;">
+                    <tr>
+                        <td>1.428896</td>
+                        <td>-0.048029</td>
+                        <td>-617.920518</td>
+                    </tr>
+                    <tr>
+                        <td>0.322619</td>
+                        <td>1.282148</td>
+                        <td>-259.966589</td>
+                    </tr>
+                    <tr>
+                        <td>0.000312</td>
+                        <td>0.000011</td>
+                        <td>1.000000</td>
+                    </tr>
+                </table>
+            </div>
+
+            <h3>Transformation Results</h3>
+            
+            <p>Let's now visualize the result of our transformation. Green dots show the original points on image 2,
+                while blue dots are transformed from red dots on image 1.</p>
+
+            <div class = "figure-center">
+                <img src="images/correspondence.png" alt="point_correspondence">
+                    <div class="label">point correspondence</div>
+            </div>
+
+
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color legend-original"></div>
+                    <span>Original Point (Image 1)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color legend-transformed"></div>
+                    <span>Transformed Point</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color legend-target"></div>
+                    <span>Target Point (Image 2)</span>
+                </div>
+            </div>
+            
+            <table class="mapping-table">
+                <thead>
+                    <tr>
+                        <th>Point #</th>
+                        <th>Original Point (Image 1)</th>
+                        <th>Transformed Point</th>
+                        <th>Target Point (Image 2)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td><div class="point-original">(933.4, 1046.4)</div></td>
+                        <td><div class="point-transformed">(511.0, 1061.7)</div></td>
+                        <td><div class="point-target">(511.6, 1064.6)</div></td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td><div class="point-original">(617.9, 1228.8)</div></td>
+                        <td><div class="point-transformed">(170.8, 1256.1)</div></td>
+                        <td><div class="point-target">(172.3, 1259.8)</div></td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td><div class="point-original">(720.0, 1416.7)</div></td>
+                        <td><div class="point-transformed">(276.5, 1442.6)</div></td>
+                        <td><div class="point-target">(274.4, 1434.9)</div></td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td><div class="point-original">(980.8, 1285.3)</div></td>
+                        <td><div class="point-transformed">(546.9, 1291.4)</div></td>
+                        <td><div class="point-target">(540.7, 1299.9)</div></td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td><div class="point-original">(1112.2, 1223.3)</div></td>
+                        <td><div class="point-transformed">(670.9, 1225.8)</div></td>
+                        <td><div class="point-target">(677.5, 1225.1)</div></td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td><div class="point-original">(1108.5, 1017.2)</div></td>
+                        <td><div class="point-transformed">(676.0, 1033.2)</div></td>
+                        <td><div class="point-target">(675.7, 1026.3)</div></td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td><div class="point-original">(1152.3, 548.5)</div></td>
+                        <td><div class="point-transformed">(734.0, 596.9)</div></td>
+                        <td><div class="point-target">(730.4, 597.7)</div></td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td><div class="point-original">(783.9, 610.5)</div></td>
+                        <td><div class="point-transformed">(377.9, 620.0)</div></td>
+                        <td><div class="point-target">(382.1, 619.6)</div></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+        
+            <!--
+              <div class="methodology">
+                <p><strong>Methodology:</strong> Used matplotlib's ginput function to manually select corresponding points between images. Solved the overdetermined system using SVD for better numerical stability.</p>
+            </div>
+            
+            <div class="code-snippet">
+# Example homography matrix recovered from correspondences
+H = [[ 1.2345, -0.0456,  125.67],
+     [ 0.0789,  1.1234,  -45.89],
+     [ 0.0002, -0.0001,    1.00]]
+            </div>
+            -->
+          
+        </section>
+        
+        <section id="part3">
+            <h2>A.3: Warp the Images</h2>
+            <p>Implemented inverse warping with both nearest neighbor and bilinear interpolation methods.
+                <br>
+                In order to get the pixel colors of the warped image, we need to sample from the source image.
+                We first get the boundary of the new image by getting the four new corners, then for each pixel 
+                in the new image, we use inverse transformation to find where the pixel is in the original image.
+                In nearest-neighbor method, we simply use the color of the nearest pixel at that coordinate as the 
+                color of the new pixel. In bilinear method, we use a weighted average of the 4 nearby pixels to acquire
+                the exact color in the new image.
+                <br>
+                Below present the basic idea of how we sample the pixels
+            </p>
+
+            <div class="code-snippet">
+    #rounding to nearest neighbor
+    x_nn = int(round(x_src))
+    y_nn = int(round(y_src))
+            </div>
+            <div class="code-snippet">
+    x0, y0 = int(np.floor(x_src)), int(np.floor(y_src))
+    x1, y1 = x0 + 1, y0 + 1
+
+    wx = x_src - x0  
+    wy = y_src - y0 
+
+
+    interpolated = (1 - wx) * (1 - wy) * im[y0, x0] + \
+                    wx * (1 - wy) * im[y0, x1] + \
+                    (1 - wx) * wy * im[y1, x0] + \
+                    wx * wy * im[y1, x1]
+            </div>
+            
+            <h3>Rectification Examples</h3>
+            <p>Applied homography to rectify known rectangular objects in images.</p>
+            
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="images/rect/1.jpg" alt="Rectification Original 1">
+                    <div class="comparison-label">Original Image 1</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/rect/rect1.jpg" alt="Rectification Warped 1">
+                    <div class="comparison-label">Rectified Image 1</div>
+                </div>
+
+                <div class="comparison-item">
+                    <img src="images/rect/2.jpg" alt="Rectification Original 2">
+                    <div class="comparison-label">Original Image 2</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/rect/rect2.jpg" alt="Rectification Warped 2">
+                    <div class="comparison-label">Rectified Image 2</div>
+                </div>
+
+                <div class="comparison-item">
+                    <img src="images/rect/3.jpg" alt="Rectification Original 3">
+                    <div class="comparison-label">Original Image 3</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/rect/rect3.jpg" alt="Rectification Warped 3">
+                    <div class="comparison-label">Rectified Image 3</div>
+                </div>
+            </div>
+            
+            <h3>Interpolation Methods Comparison</h3>
+            <p>The result from two methods </p>
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="images/rect/rect_ne.jpg" alt="Nearest Neighbor">
+                    <div class="comparison-label">Nearest Neighbor</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/rect/rect_bi.jpg" alt="Bilinear">
+                    <div class="comparison-label">Bilinear Interpolation</div>
+                </div>
+            </div>
+            <p>But zooming in?</p>
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="images/rect/nearestneighbor_crop.jpg" alt="Nearest Neighbor">
+                    <div class="comparison-label">Nearest Neighbor Detail</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/rect/bilinear_crop.jpg" alt="Bilinear">
+                    <div class="comparison-label">Bilinear Interpolation Detail</div>
+                </div>
+            </div>
+            
+            
+            <p>
+                <br>The difference of the output images from two methods is not very obvious at first glance.
+                However, when we zoom in to the detail, we observe nearest neighbor method is creating some noise in
+                the middle part of the image due to improper sampling. It fails to recover the texture of the object 
+                to a good enough extent. <br> 
+                By contrast, bilinear interpolation produces smoother results but is computationally more expensive than nearest neighbor.
+                The trade-off between speed and quality depends on the application requirements.
+            </p>
+        </section>
+        
+        <section id="part4">
+            <h2>A.4: Blend Images into a Mosaic</h2>
+            <p>In this subpart, we select 8 corresponding points from images for the reason explained in part2.
+                we use the left image as the reference image and transform the right image into the coordiate system
+                of image 1, as a result, we will need the inverse of homography matrix to warp image2.
+                We will implement multi-resolution blend from last project, but padding empty area black causes some 
+                unwanted edge artifact. So I padded the area with empty space with edge pixels from image1. 
+                The blending between two pictures looks much better now.
+                <br>But the boundary padding makes the surrounding of the mosaic look weird, let's put a mask to 
+                make them black again.
+
+            </p>
+            
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="images/a/1.jpg" alt="Mosaic 1 Source 1">
+                    <div class="comparison-label">Mosaic 1 Source 1</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/a/2.jpg" alt="Mosaic 1 Source 2">
+                    <div class="comparison-label">Mosaic 1 Source 2</div>
+                </div>
+            </div>
+            <div class = "figure-center">
+                <img src="images/saved_a/multi_mosaic_good.jpg" alt="Mosaic1">
+                    <div class="label">Mosaic1</div>
+            </div>
+            <div class = "figure-center">
+                <img src="images/saved_a/a_com.png" alt="Mosaic1">
+                    <div class="label">Mosaic1 process</div>
+            </div>
+
+
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="images/c/1.jpg" alt="Mosaic 2 Source 1">
+                    <div class="comparison-label">Mosaic 2 Source 1</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/c/2.jpg" alt="Mosaic 2 Source 2">
+                    <div class="comparison-label">Mosaic 2 Source 2</div>
+                </div>
+            </div>
+            <div class = "figure-center">
+                <img src="images/saved_c/multi_mosaic_good.jpg" alt="Mosaic2">
+                    <div class="label">Mosaic2</div>
+            </div>
+
+
+
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="images/d/1.jpg" alt="Mosaic 3 Source 1">
+                    <div class="comparison-label">Mosaic 3 Source 1</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/d/2.jpg" alt="Mosaic 3 Source 2">
+                    <div class="comparison-label">Mosaic 3 Source 2</div>
+                </div>
+            </div>
+            <div class = "figure-center">
+                <img src="images/saved_d/multi_mosaic_good.jpg" alt="Mosaic3">
+                    <div class="label">Mosaic3</div>
+            </div>
+
+            
+        </section>
+         
+        <script>
+            // 添加简单的页面加载动画
+            document.addEventListener('DOMContentLoaded', function() {
+                const sections = document.querySelectorAll('section');
+                
+                sections.forEach((section, index) => {
+                    section.style.opacity = '0';
+                    section.style.transform = 'translateY(20px)';
+                    
+                    setTimeout(() => {
+                        section.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                        section.style.opacity = '1';
+                        section.style.transform = 'translateY(0)';
+                    }, index * 200);
+                });
+            });
+        </script>
+    </div>
+</body>
+</html>
