@@ -65,6 +65,18 @@
             <p>However when we implement the recovery in practice, we find that even some small deviation of the coordinates 
                 can leads to huge error when the matrix is uniquely solved from the 4 corresponding points. The warping and mosaic result
                 appears to be rather unsatisfying.</p>
+
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="images/4point_correspondence.png" alt="correspondence">
+                    <div class="comparison-label">correspondence with 4 points</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/bad.jpg" alt="bad result">
+                    <div class="comparison-label">unsatisfying result</div>
+                </div>
+            </div>
+            <p>We can see the mappings are good but the mosaic looks terrible.</p>
                 
             <p>So on the second trial, I selected 8 points to recover a better estimate of the projection transformation. The 
                 linear equation solver will return the least square result in this case which gives a much more robust solution. And the warping and
@@ -76,6 +88,10 @@
                 <p><strong>Step 1:</strong> Use matplotlib tool to manually choose a set of corresponding points on two images.</p>
                 <p><strong>Step 2:</strong> Create the linear equation λ[u,v,1] = H[x,y,1], extend the matrix to equations and simplify by eliminating λ, 
                  now we get 2 equations for each corresponding point containing the coordinate of the points.</p>
+                 <p>for each pair of points (x, y) -> (x_p, y_p), we can construct:</p>
+                    [x, y, 1, 0, 0, 0, -x*x_p, -y*x_p, -x_p] H^T = 0<br>
+                    [0, 0, 0, x, y, 1, -x*y_p, -y*y_p, -y_p] H^T = 0<br>
+                    <br>
                 <p><strong>Step 3:</strong> Use linear equation solver to get the terms in the matrix.</p>
             </div>
 
@@ -388,7 +404,7 @@ H = [[ 1.2345, -0.0456,  125.67],
         
         <section id="part3">
             <h2>A.3: Warp the Images</h2>
-            <p>Implemented inverse warping with both nearest neighbor and bilinear interpolation methods.
+            <p>In this subpart, we implement inverse warping with both nearest neighbor and bilinear interpolation methods.
                 <br>
                 In order to get the pixel colors of the warped image, we need to sample from the source image.
                 We first get the boundary of the new image by getting the four new corners, then for each pixel 
