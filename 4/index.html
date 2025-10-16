@@ -386,19 +386,6 @@
                 </tbody>
             </table>
             
-        
-            <!--
-              <div class="methodology">
-                <p><strong>Methodology:</strong> Used matplotlib's ginput function to manually select corresponding points between images. Solved the overdetermined system using SVD for better numerical stability.</p>
-            </div>
-            
-            <div class="code-snippet">
-# Example homography matrix recovered from correspondences
-H = [[ 1.2345, -0.0456,  125.67],
-     [ 0.0789,  1.1234,  -45.89],
-     [ 0.0002, -0.0001,    1.00]]
-            </div>
-            -->
           
         </section>
         
@@ -569,6 +556,195 @@ H = [[ 1.2345, -0.0456,  125.67],
 
             
         </section>
+
+
+        <header>
+            <h1>Project 3B: Feature Matching for Autostitching</h1>
+            <p class="subtitle">Implementing automatic feature detection, matching, and robust homography estimation for image mosaicing</p>
+        </header>
+        
+        <section id="partB1">
+            <h2>B.1: Harris Corner Detection</h2>
+            <p>In this section, we implement the Harris corner detector to identify interest points in images. The Harris detector measures the local changes in image intensity to find corners, which are locations where intensity changes significantly in multiple directions.</p>
+
+            <div class="methodology">
+                <p><strong>Methodology:</strong> Used the provided Harris corner detection code to identify corners. Implemented Adaptive Non-Maximal Suppression (ANMS) to select the most distinctive corners while ensuring good spatial distribution across the image.</p>
+            </div>
+
+            <h3>Harris Corners Without ANMS</h3>
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="images/Partb_img/new_b/without_anms.png" alt="Harris Corners Image 1 - No ANMS">
+                    <div class="comparison-label">Image 1 - All Harris Corners</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/Partb_img/new_d/without_anms.png" alt="Harris Corners Image 2 - No ANMS">
+                    <div class="comparison-label">Image 2 - All Harris Corners</div>
+                </div>
+            </div>
+
+
+            <p>We can see Harris corner detector is finding hundreds or thousands of "interest points".
+                 If we simply take the top N strongest points (based on their "corner strength" score),
+                  they tend to cluster in the most textured areas of the image. This is bad for tasks 
+                  like image stitching because:
+                <br><br>
+                    Computational Cost:
+                <br>Matching is computationally expensive, and you want to limit the number of points.
+                <br>
+                    Poor Coverage:
+                <br>If all your points are in one small, highly textured region, you might have no points in the overlapping area of two images, causing the matching to fail.
+                <br><br>
+                Therefore we need ANMS! ANMS solves the above problem by selecting a set of points that are not only strong but also well-spread across the entire image.
+            </p>
+            <h3>How ANMS works</h3>
+            <p>
+                The key idea is to favor points that are the "strongest in their local neighborhood.
+                 A point in a relatively flat region of the image might have a medium strength score, 
+                 but if it's the strongest point for a large area around it, it's very important and 
+                 should be kept. Conversely, a point in a busy texture might have a very high score, 
+                 but if it's surrounded by other high-scoring points, many of them are redundant.
+                <br><br>
+                ANMS formalizes this idea by assigning each point a "suppression radius" (r_i). A large 
+                r_i means you have to look far away to find another point that is significantly stronger, 
+                making this point a good, isolated candidate. 
+            </p>
+
+
+            
+            <h3>Harris Corners With ANMS</h3>
+            <p>Adaptive Non-Maximal Suppression helps select the most distinctive corners while maintaining good spatial distribution across the image.</p>
+            
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="images/Partb_img/new_b/with_anms.png" alt="Harris Corners Image 1 - With ANMS">
+                    <div class="comparison-label">Image 1 - ANMS Selected Corners</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/Partb_img/new_d/with_anms.png" alt="Harris Corners Image 2 - With ANMS">
+                    <div class="comparison-label">Image 2 - ANMS Selected Corners</div>
+                </div>
+            </div>
+            
+            
+
+        </section>
+        
+        <section id="partB2">
+            <h2>B.2: Feature Descriptor Extraction</h2>
+            <p>For each detected corner, we extract a feature descriptor that captures the local appearance around the point. We use 8×8 patches sampled from a larger 40×40 window around each feature point.</p>
+
+            <div class="methodology">
+                <p><strong>Methodology:</strong> For each Harris corner, extract a 40×40 patch centered at the corner. Sample an 8×8 descriptor from this patch after applying appropriate blurring. Apply bias/gain normalization to make descriptors invariant to lighting changes.</p>
+            </div>
+
+            <h3>Extracted Feature Descriptors</h3>
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="images/Partb_img/new_b/feature.png" alt="Feature Descriptors Image 1">
+                    <div class="comparison-label">Sample Descriptors - Image 1</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/Partb_img/new_d/feature.png" alt="Feature Descriptors Image 2">
+                    <div class="comparison-label">Sample Descriptors - Image 2</div>
+                </div>
+            </div>
+
+        </section>
+        
+        <section id="partB3">
+            <h2>B.3: Feature Matching</h2>
+            <p>We match feature descriptors between two images using Lowe's ratio test. This method compares the distance to the nearest neighbor versus the second nearest neighbor to ensure distinctive matches.</p>
+
+            <div class="methodology">
+                <p><strong>Methodology:</strong> For each descriptor in the first image, find the two closest descriptors in the second image using Euclidean distance. Apply Lowe's ratio test with threshold 0.8 to filter ambiguous matches.</p>
+            </div>
+
+            <h3>Feature Matching Results</h3>
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="images/Partb_img/new_b/feature_match.png" alt="Feature Matches Set 1">
+                    <div class="comparison-label">Feature Matches - Set 1</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/Partb_img/new_d/feature_match.png" alt="Feature Matches Set 2">
+                    <div class="comparison-label">Feature Matches - Set 2</div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="partB4">
+            <h2>B.4: RANSAC for Robust Homography</h2>
+            <p>We use RANSAC (RANdom SAmple Consensus) to compute a robust homography estimate from potentially noisy feature matches. This method iteratively selects random subsets of points to find the homography that has the most inliers.</p>
+
+            <div class="methodology">
+                <p><strong>Methodology:</strong> Implemented 4-point RANSAC with the following parameters: 1000 iterations, inlier threshold of 5 pixels. For each iteration, randomly select 4 correspondences, compute homography, count inliers, and keep the homography with maximum inliers.</p>
+            </div>
+
+            <h3>RANSAC Implementation Details</h3>
+            <div class="math-container">
+                <p><strong>RANSAC Algorithm:</strong></p>
+                <ol>
+                    <li>Randomly select 4 feature matches</li>
+                    <li>Compute homography H from these 4 points</li>
+                    <li>Project all points from image 1 to image 2 using H</li>
+                    <li>Count inliers (points within threshold distance)</li>
+                    <li>Repeat for N iterations, keep H with most inliers</li>
+                    <li>Recompute H using all inliers</li>
+                </ol>
+            </div>
+
+            <h3>Manual vs Automatic Stitching Comparison</h3>
+            
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="images/saved_a/multi_mosaic_good.jpg" alt="Manual Mosaic 1">
+                    <div class="comparison-label">Manual Stitching - Set 1</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/Partb_img/new_a/auto_multi_mosaic.jpg" alt="Automatic Mosaic 1">
+                    <div class="comparison-label">Automatic Stitching - Set 1</div>
+                </div>
+            </div>
+
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="images/saved_c/multi_mosaic_good.jpg" alt="Manual Mosaic 2">
+                    <div class="comparison-label">Manual Stitching - Set 2</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/Partb_img/new_c/auto_multi_mosaic.jpg" alt="Automatic Mosaic 2">
+                    <div class="comparison-label">Automatic Stitching - Set 2</div>
+                </div>
+            </div>
+
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="images/saved_d/multi_mosaic_good.jpg" alt="Manual Mosaic 3">
+                    <div class="comparison-label">Manual Stitching - Set 3</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/Partb_img/new_d/auto_multi_mosaic_d.jpg" alt="Automatic Mosaic 3">
+                    <div class="comparison-label">Automatic Stitching - Set 3</div>
+                </div>
+            </div>
+        
+        
+        <section id="conclusion">
+            <h2>Conclusion</h2>
+            <p>The automatic stitching pipeline successfully demonstrates the complete process from feature detection to final mosaic creation. Key insights:</p>
+            
+            <ul>
+                <li><strong>ANMS significantly improves</strong> the spatial distribution of features compared to raw Harris corners</li>
+                <li><strong>Lowe's ratio test</strong> effectively filters ambiguous matches, improving matching accuracy</li>
+                <li><strong>RANSAC provides robust homography estimation</strong> even with significant outlier contamination</li>
+                <li><strong>Automatic results are comparable to manual stitching</strong> while being significantly faster and more reproducible</li>
+            </ul>
+            
+            <p>The implemented system can reliably create high-quality mosaics from image pairs with sufficient overlap and distinctive features.</p>
+        </section>
+
+
          
         <script>
             // 添加简单的页面加载动画
