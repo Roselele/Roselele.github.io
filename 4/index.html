@@ -537,8 +537,6 @@
                     <div class="label">Mosaic2</div>
             </div>
 
-
-
             <div class="comparison-container">
                 <div class="comparison-item">
                     <img src="images/d/1.jpg" alt="Mosaic 3 Source 1">
@@ -553,8 +551,6 @@
                 <img src="images/saved_d/multi_mosaic_good.jpg" alt="Mosaic3">
                     <div class="label">Mosaic3</div>
             </div>
-
-            
         </section>
 
 
@@ -565,11 +561,11 @@
         
         <section id="partB1">
             <h2>B.1: Harris Corner Detection</h2>
-            <p>In this section, we implement the Harris corner detector to identify interest points in images. The Harris detector measures the local changes in image intensity to find corners, which are locations where intensity changes significantly in multiple directions.</p>
-
-            <div class="methodology">
-                <p><strong>Methodology:</strong> Used the provided Harris corner detection code to identify corners. Implemented Adaptive Non-Maximal Suppression (ANMS) to select the most distinctive corners while ensuring good spatial distribution across the image.</p>
-            </div>
+            <p>In this section, we implement the Harris corner detector to identify interest points in images. 
+                The Harris detector measures the local changes in image intensity to find corners, which are 
+                locations where intensity changes significantly in multiple directions. Then we will use Adaptive 
+                Non-Maximal Suppression (ANMS) to select the most distinctive corners while ensuring good spatial 
+                distribution across the image.</p>
 
             <h3>Harris Corners Without ANMS</h3>
             <div class="comparison-container">
@@ -583,21 +579,20 @@
                 </div>
             </div>
 
-
             <p>We can see Harris corner detector is finding hundreds or thousands of "interest points".
                  If we simply take the top N strongest points (based on their "corner strength" score),
                   they tend to cluster in the most textured areas of the image. This is bad for tasks 
                   like image stitching because:
                 <br><br>
-                    Computational Cost:
+                    <strong>Computational Cost:</strong>
                 <br>Matching is computationally expensive, and you want to limit the number of points.
                 <br>
-                    Poor Coverage:
+                    <strong>Poor Coverage:</strong>
                 <br>If all your points are in one small, highly textured region, you might have no points in the overlapping area of two images, causing the matching to fail.
                 <br><br>
                 Therefore we need ANMS! ANMS solves the above problem by selecting a set of points that are not only strong but also well-spread across the entire image.
             </p>
-            <h3>How ANMS works</h3>
+            <h3>Why ANMS works</h3>
             <p>
                 The key idea is to favor points that are the "strongest in their local neighborhood.
                  A point in a relatively flat region of the image might have a medium strength score, 
@@ -609,7 +604,6 @@
                 r_i means you have to look far away to find another point that is significantly stronger, 
                 making this point a good, isolated candidate. 
             </p>
-
 
             
             <h3>Harris Corners With ANMS</h3>
@@ -625,17 +619,23 @@
                     <div class="comparison-label">Image 2 - ANMS Selected Corners</div>
                 </div>
             </div>
-            
-            
-
         </section>
+        
         
         <section id="partB2">
             <h2>B.2: Feature Descriptor Extraction</h2>
-            <p>For each detected corner, we extract a feature descriptor that captures the local appearance around the point. We use 8×8 patches sampled from a larger 40×40 window around each feature point.</p>
+            <p>For each detected corner, we extract a feature descriptor that captures the local appearance around the point.
+                 We use 8×8 patches sampled from a larger 40×40 window around each feature point. The goal is to produce 
+                 descriptors that support reliable matching across different images while being invariant to common image variations.
+            </p>
 
-            <div class="methodology">
-                <p><strong>Methodology:</strong> For each Harris corner, extract a 40×40 patch centered at the corner. Sample an 8×8 descriptor from this patch after applying appropriate blurring. Apply bias/gain normalization to make descriptors invariant to lighting changes.</p>
+            <div class="math-container">
+                <p><strong>Extraction Process:</strong></p>
+                <ol>
+                    <li>For each Harris corner, identify the 40×40 region around it</li>
+                    <li>Sample this region with 5-pixel spacing to create an 8×8 grid</li>
+                    <li>Apply bias/gain normalization to the sampled values</li>
+                </ol>
             </div>
 
             <h3>Extracted Feature Descriptors</h3>
@@ -654,11 +654,29 @@
         
         <section id="partB3">
             <h2>B.3: Feature Matching</h2>
-            <p>We match feature descriptors between two images using Lowe's ratio test. This method compares the distance to the nearest neighbor versus the second nearest neighbor to ensure distinctive matches.</p>
-
-            <div class="methodology">
-                <p><strong>Methodology:</strong> For each descriptor in the first image, find the two closest descriptors in the second image using Euclidean distance. Apply Lowe's ratio test with threshold 0.8 to filter ambiguous matches.</p>
+            <p>
+                We match feature descriptors between two images using Lowe's ratio test. 
+                This method compares the distance to the nearest neighbor versus the second 
+                nearest neighbor to ensure distinctive matches.
+            </p>
+            
+            <div class="math-container">
+                <p><strong>Matching Process:</strong></p>
+                <ol>
+                    <li>For each descriptor in image 1, find the TWO nearest neighbors in image 2 using Euclidean distance</li>
+                    <li>Compute the ratio: distance_to_closest / distance_to_second_closest</li>
+                    <li>Keep matches where this ratio is below a threshold</li>
+                </ol>
             </div>
+
+            <h3>Why this matching method works:</h3>
+            <p>
+                · A small ratio indicates the closest match is significantly better than the second-best
+                <br>
+                · A large ratio suggests ambiguity - the feature could match multiple points equally well
+                <br>
+                · This effectively filters out ambiguous matches that are likely to be incorrect
+            </p>
 
             <h3>Feature Matching Results</h3>
             <div class="comparison-container">
@@ -675,24 +693,44 @@
         
         <section id="partB4">
             <h2>B.4: RANSAC for Robust Homography</h2>
-            <p>We use RANSAC (RANdom SAmple Consensus) to compute a robust homography estimate from potentially noisy feature matches. This method iteratively selects random subsets of points to find the homography that has the most inliers.</p>
+            <p>We use RANSAC (RANdom SAmple Consensus) to compute a robust homography estimate from potentially noisy feature matches. 
+                This method iteratively selects random subsets of points to find the homography that has the most inliers.</p>
 
-            <div class="methodology">
-                <p><strong>Methodology:</strong> Implemented 4-point RANSAC with the following parameters: 1000 iterations, inlier threshold of 5 pixels. For each iteration, randomly select 4 correspondences, compute homography, count inliers, and keep the homography with maximum inliers.</p>
-            </div>
-
-            <h3>RANSAC Implementation Details</h3>
             <div class="math-container">
-                <p><strong>RANSAC Algorithm:</strong></p>
+                <p><strong>RANSAC process:</strong></p>
                 <ol>
-                    <li>Randomly select 4 feature matches</li>
-                    <li>Compute homography H from these 4 points</li>
-                    <li>Project all points from image 1 to image 2 using H</li>
-                    <li>Count inliers (points within threshold distance)</li>
-                    <li>Repeat for N iterations, keep H with most inliers</li>
-                    <li>Recompute H using all inliers</li>
+                    <li>Random Sampling: Repeatedly select 4 random point correspondences (the minimum needed to compute a homography)</li>
+                    <li>Model Estimation: Compute homography H from these 4 points</li>
+                    <li>Consensus: Count how many other points are "inliers" - points where the projected position using H is within a 
+                        threshold distance (typically 1-5 pixels) of the actual position</li>
+                    <li>Iteration: Repeat for many iterations (1000 is common) and keep the homography with the most inliers</li>
+                    <li>Refinement: Recompute homography using ALL inliers for the best model</li>
                 </ol>
             </div>
+
+            <h3>Why RANSAC works:</h3>
+            <p>
+                RANSAC works on a simple but powerful principle: 
+                "It's easier to find a small set of clean data than to clean a large noisy dataset."
+                <br><br>
+                    <strong>The Random Sampling Insight:</strong>
+                <br><br>
+                    If inliers constitute a reasonable fraction of the data (say 50%)
+                <br>
+                    The probability that 4 randomly selected points are ALL inliers is (0.5)⁴ = 0.0625
+                <br>
+                    With 100 iterations, probability of NEVER hitting 4 clean points ≈ (1-0.0625)¹⁰⁰ ≈ 0.0015
+                <br>
+                    Thus, we're almost guaranteed to find at least one clean sample
+                <br><br>
+                <strong>The Consensus Principle:</strong>
+                <br><br>
+                    A correct model will explain many data points well
+                <br>
+                    An incorrect model (from contaminated samples) will only explain the outliers used to create it
+                <br>
+                    The truth has more supporters than falsehoods
+            </p>
 
             <h3>Manual vs Automatic Stitching Comparison</h3>
             
