@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Project 4: Neural Radiance Field (NeRF)</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Project 4: Neural Radiance Field (NeRF)</h1>
+            <p class="subtitle">3D Scene Reconstruction through Neural Rendering and Inverse Rendering</p>
+        </header>
+        
+        <section id="part0">
+            <h2>Part 0: Calibrating Your Camera and Capturing a 3D Scan</h2>
+            <p>In this part, we use ArUco tags to calibrate camera parameters and estimate camera poses for creating a 3D scan of an object.</p>
+            
+            <h3>Part 0.1: Camera Calibration</h3>
+            <p>We captured 30-50 images of ArUco tags and used OpenCV to compute camera intrinsics and distortion coefficients.</p>
+            
+            
+            <h3>Part 0.2: 3D Object Scan</h3>
+            <p>We captured 30-50 images of a chosen object from different angles with consistent lighting and focus.
+                <br> Here we present 2 sample images of the chosen object and ArUco tag.
+            </p>
+            
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="images/cream1.jpg" alt="Object Setup">
+                    <div class="comparison-label">Object Setup with ArUco Tag</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/cream2.jpg" alt="Sample Images">
+                    <div class="comparison-label">Sample Object Images</div>
+                </div>
+            </div>
+            
+            <h3>Part 0.3: Camera Pose Estimation</h3>
+            <p>Using the calibrated camera parameters, we estimated camera poses for each image using Perspective-n-Point (PnP) algorithm.
+                <br>Here we present 2 screen shots of the estimated camera poses.
+            </p>
+            
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="images//camera_poses1.png" alt="Sample Images">
+                    <div class="comparison-label">camera poses1</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/camera_poses2.png" alt="Sample Images">
+                    <div class="comparison-label">camera poses2</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/visualize_distance.png" alt="Sample Images">
+                    <div class="comparison-label">camera poses from another dataset with distance</div>
+                </div>
+            </div>
+            
+            <h3>Part 0.4: Dataset Creation</h3>
+            <p>We undistorted images and packaged them into a dataset format compatible with NeRF training.</p>
+        </section>
+        
+        <section id="part1">
+            <h2>Part 1: Fit a Neural Field to a 2D Image</h2>
+            <p>We implemented a Multilayer Perceptron (MLP) with Positional Encoding to represent a 2D image as a neural field.</p>
+            
+            <h3>Model Architecture</h3>
+            <div class="math-container">
+                <p><strong>MLP Structure:</strong></p>
+                <ul>
+                    <li>Input: 2D pixel coordinates (x, y)</li>
+                    <li>Positional Encoding: L=10</li>
+                    <li>Hidden layers: 4 layers with 256 neurons each</li>
+                    <li>Activation: ReLU (hidden), Sigmoid (output)</li>
+                    <li>Output: RGB color values</li>
+                </ul>
+            </div>
+            
+            <h3>Training Progression</h3>
+            <p>The network gradually learns to reconstruct the target image through optimization.</p>
+            <div class="figure-center">
+            <img src="images/test_image.jpg" alt="original image">
+            <div class="label">original image</div>
+            </div>
+            
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="images/epoch_0000_psnr_10.65_fox.png" alt="Iteration 0">
+                    <div class="comparison-label">Iteration 0, PSNR=10.65</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/epoch_0600_psnr_25.19_fox.png" alt="Iteration 600">
+                    <div class="comparison-label">Iteration 600, PSNR=25.19</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/epoch_1200_psnr_25.59_fox.png" alt="Iteration 1200">
+                    <div class="comparison-label">Iteration 1200, PSNR=25.59</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/epoch_1800_psnr_25.84_fox.png" alt="Iteration 1800">
+                    <div class="comparison-label">Iteration 1800, PSNR=25.84</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/epoch_2400_psnr_26.13_fox.png" alt="Iteration 2400">
+                    <div class="comparison-label">Iteration 2400, PSNR=26.13</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/final_reconstruction_fox.png" alt="Iteration 3000">
+                    <div class="comparison-label">Iteration 3000, PSNR=25.80</div>
+                </div>
+            </div>
+
+            <div class="figure-center">
+            <img src="images/1.jpg" alt="original image">
+            <div class="label">original image</div>
+            </div>
+
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="images/epoch_0000_psnr_13.53.png" alt="Iteration 0">
+                    <div class="comparison-label">Iteration 0, PSNR=13.53</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/epoch_0600_psnr_21.37.png" alt="Iteration 600">
+                    <div class="comparison-label">Iteration 600, PSNR=21.37</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/epoch_1200_psnr_21.97.png" alt="Iteration 1200">
+                    <div class="comparison-label">Iteration 1200, PSNR=21.97</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/epoch_1800_psnr_22.47.png" alt="Iteration 1800">
+                    <div class="comparison-label">Iteration 1800, PSNR=22.47</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/epoch_2400_psnr_22.66.png" alt="Iteration 2400">
+                    <div class="comparison-label">Iteration 2400, PSNR=22.66</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/final_reconstruction.png" alt="Iteration 3000">
+                    <div class="comparison-label">Iteration 3000, PSNR=22.84</div>
+                </div>
+            </div>
+            
+            <h3>Hyperparameter Analysis</h3>
+            <p>We experimented with different positional encoding frequencies and network widths.</p>
+            
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="images/peL_2_hidden_32_psnr_19.15.png" alt="Low Freq, Low Width">
+                    <div class="comparison-label">L=2, Width=32</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/peL_2_hidden_128_psnr_19.95.png" alt="Low Freq, Mid Width">
+                    <div class="comparison-label">L=2, Width=128</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/peL_2_hidden_256_psnr_20.13.png" alt="Low Freq, High Width">
+                    <div class="comparison-label">L=2, Width=256</div>
+                </div>
+            </div>
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="images/peL_10_hidden_32_psnr_20.45.png" alt="Mid Freq, Low Width">
+                    <div class="comparison-label">L=10, Width=32</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/peL_10_hidden_128_psnr_22.47.png" alt="Mid Freq, Mid Width">
+                    <div class="comparison-label">L=10, Width=128</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/peL_10_hidden_256_psnr_23.66.png" alt="Mid Freq, High Width">
+                    <div class="comparison-label">L=10, Width=256</div>
+                </div>
+            </div>
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="images/peL_20_hidden_32_psnr_20.64.png" alt="High Freq, Low Width">
+                    <div class="comparison-label">L=20, Width=32</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/peL_20_hidden_128_psnr_22.88.png" alt="High Freq, Mid Width">
+                    <div class="comparison-label">L=20, Width=128</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/peL_20_hidden_256_psnr_23.90.png" alt="High Freq, High Width">
+                    <div class="comparison-label">L=20, Width=256</div>
+                </div>
+            </div>
+            <h4>How hyperparameters influence reconstructed images</h4>
+            <p>
+                Generally higher max positional encoding frequency and wider network gives higher PSNR.
+                <br>
+                <br>
+                Two hyperparameters influences quality of the reconstructed image in their own way:
+                <br><br>
+                Positional Encoding Frequency:<br>
+                Very low positional encoding frequency causes frequency aliasing, high frequencies "fold back" as false low frequencies. So we can see
+                 some straight lines are becoming abnormally curvy. Also, low positional encoding frequency acts like a low-pass filter, capturing only
+                  broad shapes and colors but losing fine details. Results look blurry and smooth.
+                <br>
+                On the other hand, high pel captures high-frequency details, preserving sharp edges and textures, but can introduce artifacts if too high.
+                High pel introduces excessive frequencies that far exceed the image's actual content, causing the network to overfit to 
+                numerical noise instead of learning the true image structure, causing some grid-like artifacts.
+                <br><br>
+                Network Width (Hidden node Size):
+                <br>
+                Narrow network have limited capacity, produces overly simplified reconstructions that miss subtle color variations and details.
+                While wider network have larger capacity to represent complex color gradients and fine details, resulting in more photorealistic reconstructions.</p>
+            
+            <h3>PSNR Curve</h3>
+            <div class="figure-center">
+                <img src="images/part1_curve.png" alt="PSNR Curve">
+                <div class="label">PSNR curve and Loss curve for my own image</div>
+            </div>
+        </section>
+        
+        <section id="part2">
+            <h1>Part 2: Neural Radiance Field from Multi-view Images</h1>
+        
+        <p>This part extend the 2D neural field to 3D, creating a Neural Radiance Field (NeRF) that can represent 3D scenes from multi-view images.
+             This implementation reconstructs 3D scenes from 2D images, enabling novel view synthesis and 3D understanding.</p>
+
+        <h2>Part 2.1: Ray Generation</h2>
+        <p>This subpart impleements transformation helper function including: <strong>Camera to World Coordinate Conversion, 
+            Pixel to Camera Coordinate Conversion and Pixel to Ray</strong></p>
+        
+        <div class="algorithm-box">
+            x_w = transform(c2w, x_c)  // Camera to world coordinates<br>
+            x_c = pixel_to_camera(K, uv, s)  // Pixel to camera coordinates<br>
+            ray_o, ray_d = pixel_to_ray(K, c2w, uv)  // Generate rays
+        </div>
+
+        <h2>Part 2.2: Sampling along Rays</h2>
+        <p>This subpart discretize rays into samples and applied perturbation during training for better coverage.</p>
+        
+        <div class="algorithm-box">
+            // Uniform sampling with perturbation<br>
+            t_vals = torch.linspace(near, far, n_samples)<br>
+            if perturb: t_vals += random_noise<br>
+            points = ray_o + ray_d * t_vals
+        </div>
+
+        <table class="parameter-table">
+            <tr>
+                <th>Parameter</th>
+                <th>Value</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td>Near/Far Planes</td>
+                <td>2.0 / 6.0(data dependent)</td>
+                <td>Define sampling bounds for synthetic data</td>
+            </tr>
+            <tr>
+                <td>Number of Samples</td>
+                <td>64</td>
+                <td>Controls discretization quality</td>
+            </tr>
+            <tr>
+                <td>Perturbation</td>
+                <td>True / False </td>
+                <td>Adds noise for better training coverage</td>
+            </tr>
+        </table>
+
+        <h2>Part 2.3: Data Loading and Visualization</h2>
+        <p>visualize camera, rays and sample to test our implementation of transformation and sampling function</p>
+
+        <div class="figure-center">
+            <img src="images/100rays.png" alt="Ray Visualization">
+            <div class="label">visualize 100 rays</div>
+        </div>
+        <div class="figure-center">
+            <img src="images/single_camera.png" alt="Ray Visualization">
+            <div class="label">visualize rays and samples from a single camera </div>
+        </div>
+
+        <h2>Part 2.4: NeRF Network Architecture</h2>
+        <p>This subpart constructs a MLP that learns from images and outputs density and view-dependent color.</p>
+
+        <div class="math-container">
+            <p><strong>Network Architecture Details:</strong></p>
+            <ul>
+                <li><strong>Input:</strong> 3D coordinates (x, y, z) and view direction (θ, φ)</li>
+                <li><strong>Positional Encoding:</strong> L=10 for coordinates, L=4 for view direction</li>
+                <li><strong>Hidden Layers:</strong> 8 layers with 256 neurons each</li>
+                <li><strong>Skip Connection:</strong> At layer 4 to preserve input information</li>
+                <li><strong>Output:</strong> Density (σ) using ReLU and RGB color (c) using Sigmoid</li>
+            </ul>
+        </div>
+
+        <table class="parameter-table">
+            <tr>
+                <th>Parameter</th>
+                <th>Value</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td>Position Encoding (Coord)</td>
+                <td>L=10</td>
+                <td>Enables learning high-frequency spatial details</td>
+            </tr>
+            <tr>
+                <td>Position Encoding (Dir)</td>
+                <td>L=4</td>
+                <td>Captures view-dependent effects</td>
+            </tr>
+            <tr>
+                <td>Hidden Dimension</td>
+                <td>256</td>
+                <td>Network capacity and expressiveness</td>
+            </tr>
+            <tr>
+                <td>Skip Connection</td>
+                <td>Layer 4</td>
+                <td>Improves gradient flow and prevents forgetting</td>
+            </tr>
+        </table>
+
+        <h2>Part 2.5: Volume Rendering</h2>
+        <p>This subpart implements the volume rendering equation to composite samples along a ray into a final pixel color.</p>
+
+        <div class="math-container">
+            <p><strong>Volume Rendering Equation:</strong></p>
+            <p>C(r) = ∑<sub>i=1</sub><sup>N</sup> T<sub>i</sub> × (1 - exp(-σ<sub>i</sub> × δ<sub>i</sub>)) × c<sub>i</sub></p>
+            <p>where T<sub>i</sub> = exp(-∑<sub>j=1</sub><sup>i-1</sup> σ<sub>j</sub> × δ<sub>j</sub>)</p>
+        </div>
+
+        <div class="algorithm-box">
+            // Volume rendering implementation<br>
+            alphas = 1 - exp(-sigmas * step_size)<br>
+            transmittance = cumprod(1 - alphas)<br>
+            weights = transmittance * alphas<br>
+            rendered_color = sum(weights * rgbs)
+        </div>
+        
+        
+        
+        <h2>Training Pipeline and Optimization for lego test data</h2>
+
+        <div class="math-container">
+            <p><strong>Training Strategy:</strong></p>
+            <ul>
+                <li><strong>Optimizer:</strong> Adam with learning rate 5e-4, weight decay 1e-5</li>
+                <li><strong>Learning Rate Schedule:</strong> Cosine annealing from 5e-4 to 1e-5 over 2000 steps</li>
+                <li><strong>Gradient Clipping:</strong> Max norm of 1.0 for training stability</li>
+                <li><strong>Early Stopping:</strong> Patience of 300 steps after step 500</li>
+            </ul>
+        </div>
+
+        
+
+        
+        
+        <h3>Training Progress</h3>
+        <p>The NeRF gradually learns to reconstruct the 3D scene from multi-view images.</p>
+        
+        <div class="comparison-container">
+            <div class="comparison-item">
+                <img src="images/step_000000_psnr_11.40_lego.png" alt="Iteration 0000">
+                <div class="comparison-label">Iteration 0000, PSNR=11.40</div>
+            </div>
+            <div class="comparison-item">
+                <img src="images/step_000300_psnr_19.99_lego.png" alt="Iteration 0300">
+                <div class="comparison-label">Iteration 0300, PSNR=19.99</div>
+            </div>
+            <div class="comparison-item">
+                <img src="images/step_000600_psnr_20.74_lego.png" alt="Iteration 06000">
+                <div class="comparison-label">Iteration 0600, PSNR=20.74</div>
+            </div>
+            <div class="comparison-item">
+                <img src="images/step_000900_psnr_21.79_leego.png" alt="Iteration 0900">
+                <div class="comparison-label">Iteration 0900, PSNR=21.79</div>
+            </div>
+            <div class="comparison-item">
+                <img src="images/step_001200_psnr_22.24_lego.png" alt="Iteration 1200">
+                <div class="comparison-label">Iteration 0000, PSNR=22.24</div>
+            </div>
+            <div class="comparison-item">
+                <img src="images/step_001500_psnr_22.75_lego.png" alt="Iteration 1500">
+                <div class="comparison-label">Iteration 0300, PSNR=22.75</div>
+            </div>
+            <div class="comparison-item">
+                <img src="images/step_001800_psnr_23.29_lego.png" alt="Iteration 1800">
+                <div class="comparison-label">Iteration 1800, PSNR=23.29</div>
+            </div>
+        </div>
+            
+        <h3>Validation PSNR</h3>
+        <div class="figure-center">
+            <img src="images/lego_PSNR.png" alt="Validation PSNR">
+            <div class="label">PSNR curve for lego</div>
+        </div>
+            
+        <h3>Novel View Synthesis</h3>
+        <p>We rendered a novel view video using the given camera trajectory.</p>
+
+        <img src="images/output.gif" alt="lego result render" class="centered-gif">
+
+        </section>
+        <section id="part2_6">
+            <h2>Part 2.6: Training with Custom Data</h2>
+            <p>This part applies the NeRF implementation to the custom dataset collected in Part 0.</p>
+            
+            <h3>Dataset-Specific Parameter Adjustments</h3>
+            
+            <div class="parameter-changes">
+                <div class="parameter-section">
+                    <h4>Sampling and training parameters</h4>
+                    <table class="parameter-table">
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Custom Dataset</th>
+                            <th>Rationale</th>
+                        </tr>
+                        <tr>
+                            <td>Near Plane</td>
+                            <td>0.02</td>
+                            <td>Real objects are much closer to camera in our setup</td>
+                        </tr>
+                        <tr>
+                            <td>Far Plane</td>
+                            <td>1</td>
+                            <td>Limited depth range for tabletop objects</td>
+                        </tr>
+                        <tr>
+                            <td>Samples per Ray</td>
+                            <td>64</td>
+                            <td>balence between quality and training speed</td>
+                        </tr>
+                        <tr>
+                            <td>Batch Size</td>
+                            <td>1024->4096->10000</td>
+                            <td>robust learning</td>
+                        </tr>
+                        <tr>
+                            <td>Learning Rate</td>
+                            <td>1e-3</td>
+                            <td>Higher rate initially with Adam and scheduler to modify</td>
+                        </tr>
+                        <tr>
+                            <td>LR Schedule</td>
+                            <td>Step Decay</td>
+                            <td>Step decay at 2k, 5k, 10k iterations for stability</td>
+                        </tr>
+                        <tr>
+                            <td>Weight Decay</td>
+                            <td>1e-6</td>
+                            <td>Reduced regularization for complex textures</td>
+                        </tr>
+                        <tr>
+                            <td>Training Iterations</td>
+                            <td>20,000</td>
+                            <td>Extended training for better texture detail</td>
+                        </tr>
+                    </table>
+                </div>
+
+
+
+            <h3>Challenges and Solutions</h3>
+
+            <div class="challenges">
+                <div class="challenge-item">
+                    <h4>Challenge 1: tuning far near sample ends</h4>
+                    <p><strong>Problem:</strong> struggle to find the best far near distance for sampling</p>
+                    <p><strong>Solution:</strong> visualize in viser to see the rough distance</p>
+                </div>
+                <div class="challenge-item">
+                    <h4>Challenge 2: Limited Camera Views</h4>
+                    <p><strong>Problem:</strong> Only 30-50 images vs. 100+ in synthetic dataset</p>
+                    <p><strong>Solution:</strong> use data augmentation strategy and longer training</p>
+                </div>
+                <div class="challenge-item">
+                    <h4>Challenge 3: convergence</h4>
+                    <p><strong>Problem:</strong> loss and PSNR jitters as training </p>
+                    <p><strong>Solution:</strong> use scheduler to constrain the learning rate and more iterations</p>
+                </div>
+                <div class="challenge-item">
+                    <h4>Challenge 4: not enough momery</h4>
+                    <p><strong>Problem:</strong> original picture with high resolution yields large space to train </p>
+                    <p><strong>Solution:</strong> resize to 200x200, also solves the size mismatch problem</p>
+                </div>
+            </div>
+
+            <h3>Training Progress on Custom Object</h3>
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="images/cream300.png" alt="Custom Iteration 300">
+                    <div class="comparison-label">Iteration 300</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/cream2000.png" alt="Custom Iteration 2000">
+                    <div class="comparison-label">Iteration 2000</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/cream8000.png" alt="Custom Iteration 8000">
+                    <div class="comparison-label">Iteration 8000</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/cream14000.png" alt="Custom Iteration 14000">
+                    <div class="comparison-label">Iteration 14000</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/cream20000.png" alt="Custom Iteration 20000">
+                    <div class="comparison-label">Iteration 20000</div>
+                </div>
+            </div>
+            
+            <h3>Training Loss</h3>
+            <div class="figure-center">
+                <img src="images/cream_curve.png" alt="Training Loss">
+                <div class="label">Training Loss Progression</div>
+            </div>
+            
+            <h3>Novel View Synthesis of Custom Object</h3>
+            <div class="centered-gif">
+                <img src="images/output2.gif" alt="lego result render">
+                <div class="label">my result render</div>
+            </div>
+            <div class="centered-gif">
+                <img src="images/output_small.gif" alt="lego result render">
+                <div class="label">my result render(compressed)</div>
+            </div>
+            
+        </section>
+        
+        
+        <section id="conclusion">
+            <h2>Conclusion</h2>
+            <p>This project demonstrated the complete pipeline for creating Neural Radiance Fields from multi-view images:</p>
+            
+            <ul>
+                <li><strong>Camera calibration and pose estimation</strong> using ArUco tags provides accurate camera parameters</li>
+                <li><strong>Neural fields</strong> with positional encoding can effectively represent 2D images</li>
+                <li><strong>NeRF</strong> extends this concept to 3D, enabling novel view synthesis from sparse inputs</li>
+                <li><strong>Volume rendering</strong> allows differentiable rendering of neural radiance fields</li>
+                <li>The approach generalizes well to custom datasets with proper parameter tuning</li>
+            </ul>
+        </section>
+        
+        <script>
+            // 添加简单的页面加载动画
+            document.addEventListener('DOMContentLoaded', function() {
+                const sections = document.querySelectorAll('section');
+                
+                sections.forEach((section, index) => {
+                    section.style.opacity = '0';
+                    section.style.transform = 'translateY(20px)';
+                    
+                    setTimeout(() => {
+                        section.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                        section.style.opacity = '1';
+                        section.style.transform = 'translateY(0)';
+                    }, index * 200);
+                });
+            });
+        </script>
+    </div>
+</body>
+</html>
