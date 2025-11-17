@@ -326,11 +326,6 @@ li {
     margin-bottom: var(--space-sm);
 }
 
-@media (min-width: 768px) {
-    .parameter-effects {
-        grid-template-columns: 1fr 1fr;
-    }
-}
 .centered-gif {
     display: flex;
     flex-direction: column;
