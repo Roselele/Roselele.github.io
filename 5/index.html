@@ -18,27 +18,27 @@
             <p>In this part, we use ArUco tags to calibrate camera parameters and estimate camera poses for creating a 3D scan of an object.</p>
             
             <h3>Part 0.1: Camera Calibration</h3>
-            <p>We captured 30-50 images of ArUco tags and used OpenCV to compute camera intrinsics and distortion coefficients.</p>
+            <p>We capture 30-50 images of ArUco tags and used OpenCV to compute camera intrinsics and distortion coefficients.</p>
             
             
             <h3>Part 0.2: 3D Object Scan</h3>
-            <p>We captured 30-50 images of a chosen object from different angles with consistent lighting and focus.
+            <p>We capture 30-50 images of a chosen object from different angles with consistent lighting and focus.
                 <br> Here we present 2 sample images of the chosen object and ArUco tag.
             </p>
             
             <div class="comparison-container">
                 <div class="comparison-item">
                     <img src="images/cream1.jpg" alt="Object Setup">
-                    <div class="comparison-label">Object Setup with ArUco Tag</div>
+                    <div class="comparison-label">Sample Object Image1</div>
                 </div>
                 <div class="comparison-item">
                     <img src="images/cream2.jpg" alt="Sample Images">
-                    <div class="comparison-label">Sample Object Images</div>
+                    <div class="comparison-label">Sample Object Image2</div>
                 </div>
             </div>
             
             <h3>Part 0.3: Camera Pose Estimation</h3>
-            <p>Using the calibrated camera parameters, we estimated camera poses for each image using Perspective-n-Point (PnP) algorithm.
+            <p>Using the calibrated camera parameters, we estimate camera poses for each image using Perspective-n-Point (PnP) algorithm.
                 <br>Here we present 2 screen shots of the estimated camera poses.
             </p>
             
@@ -58,7 +58,7 @@
             </div>
             
             <h3>Part 0.4: Dataset Creation</h3>
-            <p>We undistorted images and packaged them into a dataset format compatible with NeRF training.</p>
+            <p>We undistorte images and packaged them into a dataset format compatible with NeRF training.</p>
         </section>
         
         <section id="part1">
@@ -188,27 +188,70 @@
                     <div class="comparison-label">L=20, Width=256</div>
                 </div>
             </div>
-            <h4>How hyperparameters influence reconstructed images</h4>
-            <p>
-                Generally higher max positional encoding frequency and wider network gives higher PSNR.
-                <br>
-                <br>
-                Two hyperparameters influences quality of the reconstructed image in their own way:
-                <br><br>
-                Positional Encoding Frequency:<br>
-                Very low positional encoding frequency causes frequency aliasing, high frequencies "fold back" as false low frequencies. So we can see
-                 some straight lines are becoming abnormally curvy. Also, low positional encoding frequency acts like a low-pass filter, capturing only
-                  broad shapes and colors but losing fine details. Results look blurry and smooth.
-                <br>
-                On the other hand, high pel captures high-frequency details, preserving sharp edges and textures, but can introduce artifacts if too high.
-                High pel introduces excessive frequencies that far exceed the image's actual content, causing the network to overfit to 
-                numerical noise instead of learning the true image structure, causing some grid-like artifacts.
-                <br><br>
-                Network Width (Hidden node Size):
-                <br>
-                Narrow network have limited capacity, produces overly simplified reconstructions that miss subtle color variations and details.
-                While wider network have larger capacity to represent complex color gradients and fine details, resulting in more photorealistic reconstructions.</p>
-            
+            <h4>How Hyperparameters Influence Reconstructed Images</h4>
+
+<div class="hyperparameter-explanation">
+    <p>
+        Generally, higher max positional encoding frequency and wider networks yield higher PSNR scores. 
+        Each hyperparameter affects image quality in distinct but complementary ways:
+    </p>
+
+    <div class="parameter-section">
+        <h5>Positional Encoding Frequency</h5>
+        
+        <div class="parameter-effects">
+            <div class="effect-card">
+                <h6>Low Frequency Issues:</h6>
+                <ul>
+                    <li><strong>Frequency Aliasing:</strong> High frequencies "fold back" as false low frequencies, causing straight lines to appear abnormally curvy</li>
+                    <li><strong>Low-Pass Filter Effect:</strong> Captures only broad shapes and colors while losing fine details</li>
+                    <li><strong>Blurry Results:</strong> Produces smooth, blurry reconstructions lacking sharpness and definition</li>
+                </ul>
+            </div>
+
+            <div class="effect-card">
+                <h6>High Frequency Issues:</h6>
+                <ul>
+                    <li><strong>Artifact Introduction:</strong> Excessive frequencies can create grid-like artifacts and noise</li>
+                    <li><strong>Overfitting Risk:</strong> May cause the network to fit numerical noise rather than true image structure</li>
+                    <li><strong>Unnecessary Detail:</strong> Captures frequencies far beyond the image's actual content requirements</li>
+                </ul>
+            </div>
+
+            <div class="optimal-setting">
+                <strong>Optimal Setting:</strong> Balanced frequency that captures genuine high-frequency details without introducing artifacts
+            </div>
+        </div>
+    </div>
+
+    <div class="parameter-section">
+        <h5>Network Width (Hidden Layer Size)</h5>
+        
+        <div class="parameter-effects">
+            <div class="effect-card">
+                <h6>Narrow Networks:</h6>
+                <ul>
+                    <li><strong>Limited Capacity:</strong> Restricted ability to represent complex functions and patterns</li>
+                    <li><strong>Simplified Reconstructions:</strong> Miss subtle color variations and fine details</li>
+                    <li><strong>Underfitting:</strong> Produces overly basic representations of complex scenes</li>
+                </ul>
+            </div>
+
+            <div class="effect-card">
+                <h6>Wide Networks:</h6>
+                <ul>
+                    <li><strong>Enhanced Capacity:</strong> Larger representational power for complex color gradients and textures</li>
+                    <li><strong>Detail Preservation:</strong> Better at capturing fine textures and subtle variations</li>
+                    <li><strong>Photorealistic Results:</strong> Enables more accurate and nuanced reconstructions</li>
+                </ul>
+            </div>
+
+            <div class="optimal-setting">
+                <strong>Optimal Setting:</strong> Sufficient width to capture scene complexity without excessive computational overhead
+            </div>
+        </div>
+    </div>
+
             <h3>PSNR Curve</h3>
             <div class="figure-center">
                 <img src="images/part1_curve.png" alt="PSNR Curve">
@@ -286,7 +329,6 @@
                 <li><strong>Input:</strong> 3D coordinates (x, y, z) and view direction (θ, φ)</li>
                 <li><strong>Positional Encoding:</strong> L=10 for coordinates, L=4 for view direction</li>
                 <li><strong>Hidden Layers:</strong> 8 layers with 256 neurons each</li>
-                <li><strong>Skip Connection:</strong> At layer 4 to preserve input information</li>
                 <li><strong>Output:</strong> Density (σ) using ReLU and RGB color (c) using Sigmoid</li>
             </ul>
         </div>
@@ -311,11 +353,6 @@
                 <td>Hidden Dimension</td>
                 <td>256</td>
                 <td>Network capacity and expressiveness</td>
-            </tr>
-            <tr>
-                <td>Skip Connection</td>
-                <td>Layer 4</td>
-                <td>Improves gradient flow and prevents forgetting</td>
             </tr>
         </table>
 
@@ -395,9 +432,9 @@
         </div>
             
         <h3>Novel View Synthesis</h3>
-        <p>We rendered a novel view video using the given camera trajectory.</p>
+        <p>A novel view video using the given camera trajectory.</p>
 
-        <img src="images/output.gif" alt="lego result render" class="centered-gif">
+        <img src="images/lego.gif" alt="lego result render" class="centered-gif">
 
         </section>
         <section id="part2_6">
