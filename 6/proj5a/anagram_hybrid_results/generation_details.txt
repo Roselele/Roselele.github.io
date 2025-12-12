@@ -1,0 +1,12 @@
+ANAGRAM AND HYBRID GENERATION DETAILS
+========================================
+
+ANAGRAM PAIRS:
+Anagram 1: Prompt = 'an oil painting of a snowy mountain village'
+Anagram 2: Prompt = 'a photo of the amalfi cost'
+
+HYBRID IMAGES:
+Hybrid 1: Prompts = 'an oil painting of a snowy mountain village' + 'a photo of the amalfi cost'
+Hybrid 2: Prompts = 'a photo of the amalfi cost' + 'a photo of a man'
+
+Total generated: 2 anagram pairs (4 images) and 2 hybrid images

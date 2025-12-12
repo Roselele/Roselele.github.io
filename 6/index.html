@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Project 5A: The Power of Diffusion Models</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Project 5A: The Power of Diffusion Models</h1>
+            <p class="subtitle">Exploring DeepFloyd IF for Image Generation and Manipulation</p>
+        </header>
+        
+        <section id="part0">
+            <h2>Part 0: Setup and Text-to-Image Generation</h2>
+            <p>In this part, we set up the DeepFloyd IF diffusion model and generate images from text prompts.</p>
+            
+            <h3>Part 0.1: Model Setup and Prompt Embeddings</h3>
+            <p>We created a Hugging Face account, accepted the DeepFloyd license, and generated prompt embeddings for custom text prompts.</p>
+            
+            <h3>Part 0.2: Text-to-Image Results</h3>
+            <p>Generated images using custom text prompts with different inference steps:
+                <br>prompts:<br>
+                prompt1:A chicken and a monkey hybrid<br>
+                prompt2:A river flowing with liquid starlight through a dark forest<br>
+                prompt3:A dragon made of crystal and light, sleeping on a mountain of gems<br>
+                prompt4:explosion in the water<br>
+                prompt5:A book made of bugs<br>
+                Below I will show generated image of each prompt with 20 and 80 inference steps.<br>
+                <br>
+            </p>
+            
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="images/generate20/01_a_chicken_and_a_monkey_hybrid.png" alt="Prompt 1 - 20 steps">
+                    <div class="comparison-label">"Prompt 1" - 20 steps</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/generate80/00_a_chicken_and_a_monkey_hybrid.png" alt="Prompt 1 - 80 steps">
+                    <div class="comparison-label">"Prompt 1" - 80 steps</div>
+                </div>
+            </div>
+            
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="images/generate20/03_A_river_flowing_with_liquid_st.png" alt="Prompt 2 - 20 steps">
+                    <div class="comparison-label">"Prompt 2" - 20 steps</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/generate80/01_A_river_flowing_with_liquid_st.png" alt="Prompt 2 - 80 steps">
+                    <div class="comparison-label">"Prompt 2" - 80 steps</div>
+                </div>
+            </div>
+
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="images/generate20/04_A_dragon_made_of_crystal_and_l.png" alt="Prompt 3 - 20 steps">
+                    <div class="comparison-label">"Prompt 3" - 20 steps</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/generate80/02_A_dragon_made_of_crystal_and_l.png" alt="Prompt 3 - 80 steps">
+                    <div class="comparison-label">"Prompt 3" - 80 steps</div>
+                </div>
+            </div>
+            
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="images/generate20/09_explosion_in_the_water.png" alt="Prompt 4 - 20 steps">
+                    <div class="comparison-label">"Prompt 4" - 20 steps</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/generate80/03_explosion_in_the_water.png" alt="Prompt 4 - 80 steps">
+                    <div class="comparison-label">"Prompt 4" - 80 steps</div>
+                </div>
+            </div>
+
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="images/generate20/10_a_book_made_of_bugs.png" alt="Prompt 5 - 20 steps">
+                    <div class="comparison-label">"Prompt 5" - 20 steps</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="images/generate80/04_a_book_made_of_bugs.png" alt="Prompt 5 - 80 steps">
+                    <div class="comparison-label">"Prompt 5" - 80 steps</div>
+                </div>
+            </div>
+
+            
+            <h4>Random Seed</h4>
+            <p><strong>Used seed:</strong> 100 (used consistently throughout all experiments)</p>
+        </section>
+        
+        <section id="part1">
+            <h2>Part 1: Sampling Loops and Diffusion Techniques</h2>
+            
+            <h3>Part 1.1: Forward Process Implementation</h3>
+            <p>Implemented the forward process to add noise to images at different timesteps.</p>
+            
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="proj5a/noisy_imgs/original.png" alt="Original Campanile">
+                    <div class="comparison-label">Original Campanile</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/noisy_imgs/t=250.png" alt="t=250">
+                    <div class="comparison-label">Noisy Campanile at t=250</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/noisy_imgs/t=500.png" alt="t=500">
+                    <div class="comparison-label">Noisy Campanile at t=500</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/noisy_imgs/t=750.png" alt="t=750">
+                    <div class="comparison-label">Noisy Campanile at t=750</div>
+                </div>
+            </div>
+            
+            <h3>Part 1.2: Classical Denoising with Gaussian Blur</h3>
+            <p>Applied Gaussian blur filtering to denoise the noisy Campanile images.</p>
+            
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="proj5a/classical_denoise/t=250_sigma=1.0.png" alt="Gaussian t=250">
+                    <div class="comparison-label">Gaussian Denoised t=250 sigma=1.0</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/classical_denoise/t=500_sigma=1.5.png" alt="Gaussian t=500">
+                    <div class="comparison-label">Gaussian Denoised t=500 sigma=1.5</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/classical_denoise/t=750_sigma=2.0.png" alt="Gaussian t=750">
+                    <div class="comparison-label">Gaussian Denoised t=750 sigma=2.0</div>
+                </div>
+            </div>
+            
+            <h3>Part 1.3: One-Step Denoising with Diffusion Model</h3>
+            <p>Used the pretrained UNet to perform one-step denoising on noisy images.</p>
+            
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="proj5a/1step_denoise/t=250.png" alt="One-step t=250">
+                    <div class="comparison-label">One-Step Denoised t=250</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/1step_denoise/t=500.png" alt="One-step t=500">
+                    <div class="comparison-label">One-Step Denoised t=500</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/1step_denoise/t=750.png" alt="One-step t=750">
+                    <div class="comparison-label">One-Step Denoised t=750</div>
+                </div>
+            </div>
+            
+            <h3>Part 1.4: Iterative Denoising</h3>
+            <p>Implemented iterative denoising with strided timesteps for more efficient sampling.</p>
+            
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="proj5a/iterative_denoise/denoising_step_000.png" alt="Iterative t=90">
+                    <div class="comparison-label">Iterative Denoising t=90</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/iterative_denoise/denoising_step_005.png" alt="Iterative t=240">
+                    <div class="comparison-label">Iterative Denoising t=240</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/iterative_denoise/denoising_step_010.png" alt="Iterative t=390">
+                    <div class="comparison-label">Iterative Denoising t=390</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/iterative_denoise/denoising_step_015.png" alt="Iterative t=540">
+                    <div class="comparison-label">Iterative Denoising t=540</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/iterative_denoise/denoising_step_020.png" alt="Iterative t=690">
+                    <div class="comparison-label">Iterative Denoising t=690</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/iterative_denoise/final_denoised.png" alt="Iterative Final">
+                    <div class="comparison-label">Final Iterative Denoised</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/iterative_denoise/noisy_input.png" alt="Noisy Input">
+                    <div class="comparison-label">Noisy Input</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/iterative_denoise/gaussian_blur_denoised.png" alt="Gaussian Blur">
+                    <div class="comparison-label">Gaussian Blur Denoise</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/iterative_denoise/one_step_denoised.png" alt="1 Step Denoise">
+                    <div class="comparison-label">1 Step Denoise</div>
+                </div>
+            </div>
+            
+            <h3>Part 1.5: Diffusion Model Sampling</h3>
+            <p>Generated images from pure noise using the diffusion model.</p>
+            
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="proj5a/generated_samples/sample_1.png" alt="Sample 1">
+                    <div class="comparison-label">Sample 1</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/generated_samples/sample_2.png" alt="Sample 2">
+                    <div class="comparison-label">Sample 2</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/generated_samples/sample_3.png" alt="Sample 3">
+                    <div class="comparison-label">Sample 3</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/generated_samples/sample_4.png" alt="Sample 4">
+                    <div class="comparison-label">Sample 4</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/generated_samples/sample_5.png" alt="Sample 5">
+                    <div class="comparison-label">Sample 5</div>
+                </div>
+            </div>
+            
+            <h3>Part 1.6: Classifier-Free Guidance (CFG)</h3>
+            <p>Implemented CFG to improve image quality by combining conditional and unconditional noise estimates.</p>
+            
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="proj5a/cfg_samples/cfg_sample_1.png" alt="CFG Sample 1">
+                    <div class="comparison-label">CFG Sample 1</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/cfg_samples/cfg_sample_2.png" alt="CFG Sample 2">
+                    <div class="comparison-label">CFG Sample 2</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/cfg_samples/cfg_sample_3.png" alt="CFG Sample 3">
+                    <div class="comparison-label">CFG Sample 3</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/cfg_samples/cfg_sample_4.png" alt="CFG Sample 4">
+                    <div class="comparison-label">CFG Sample 4</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/cfg_samples/cfg_sample_5.png" alt="CFG Sample 5">
+                    <div class="comparison-label">CFG Sample 5</div>
+                </div>
+            </div>
+            
+            <h3>Part 1.7: Image-to-Image Translation</h3>
+            
+            <h4>Part 1.7.1: SDEdit on Campanile</h4>
+            <p>Applied SDEdit at different noise levels to create edits of the Campanile image.</p>
+            
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="proj5a/img-img_translation/campanile_denoised_start1.png" alt="SDEdit i_start=1">
+                    <div class="comparison-label">SDEdit i_start=1</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/img-img_translation/campanile_denoised_start3.png" alt="SDEdit i_start=3">
+                    <div class="comparison-label">SDEdit i_start=3</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/img-img_translation/campanile_denoised_start5.png" alt="SDEdit i_start=5">
+                    <div class="comparison-label">SDEdit i_start=5</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/img-img_translation/campanile_denoised_start7.png" alt="SDEdit i_start=7">
+                    <div class="comparison-label">SDEdit i_start=7</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/img-img_translation/campanile_denoised_start10.png" alt="SDEdit i_start=10">
+                    <div class="comparison-label">SDEdit i_start=10</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/img-img_translation/campanile_denoised_start20.png" alt="SDEdit i_start=20">
+                    <div class="comparison-label">SDEdit i_start=20</div>
+                </div>
+            </div>
+
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="proj5a/img-img_translation/Test Image 1_denoised_start1.png" alt="SDEdit i_start=1">
+                    <div class="comparison-label">SDEdit i_start=1</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/img-img_translation/Test Image 1_denoised_start3.png" alt="SDEdit i_start=3">
+                    <div class="comparison-label">SDEdit i_start=3</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/img-img_translation/Test Image 1_denoised_start5.png" alt="SDEdit i_start=5">
+                    <div class="comparison-label">SDEdit i_start=5</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/img-img_translation/Test Image 1_denoised_start7.png" alt="SDEdit i_start=7">
+                    <div class="comparison-label">SDEdit i_start=7</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/img-img_translation/Test Image 1_denoised_start10.png" alt="SDEdit i_start=10">
+                    <div class="comparison-label">SDEdit i_start=10</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/img-img_translation/Test Image 1_denoised_start20.png" alt="SDEdit i_start=20">
+                    <div class="comparison-label">SDEdit i_start=20</div>
+                </div>
+            </div>
+
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="proj5a/img-img_translation/Test Image 2_denoised_start1.png" alt="SDEdit i_start=1">
+                    <div class="comparison-label">SDEdit i_start=1</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/img-img_translation/Test Image 2_denoised_start3.png" alt="SDEdit i_start=3">
+                    <div class="comparison-label">SDEdit i_start=3</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/img-img_translation/Test Image 2_denoised_start5.png" alt="SDEdit i_start=5">
+                    <div class="comparison-label">SDEdit i_start=5</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/img-img_translation/Test Image 2_denoised_start7.png" alt="SDEdit i_start=7">
+                    <div class="comparison-label">SDEdit i_start=7</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/img-img_translation/Test Image 2_denoised_start10.png" alt="SDEdit i_start=10">
+                    <div class="comparison-label">SDEdit i_start=10</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/img-img_translation/Test Image 2_denoised_start20.png" alt="SDEdit i_start=20">
+                    <div class="comparison-label">SDEdit i_start=20</div>
+                </div>
+            </div>
+
+            
+            <h4>Part 1.7.2: Web and Hand-Drawn Images</h4>
+            <p>Applied SDEdit to web images and hand-drawn sketches.</p>
+            
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="proj5a/unrealistic/web1.png" alt="Web Original">
+                    <div class="comparison-label">Web Image Step=1</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/unrealistic/web3.png" alt="Drawn 1 Original">
+                    <div class="comparison-label">Web Image Step=3</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/unrealistic/web5.png" alt="Drawn 1 Original">
+                    <div class="comparison-label">Web Image Step=5</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/unrealistic/web7.png" alt="Drawn 1 Original">
+                    <div class="comparison-label">Web Image Step=7</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/unrealistic/web10.png" alt="Drawn 1 Original">
+                    <div class="comparison-label">Web Image Step=10</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/unrealistic/web20.png" alt="Drawn 1 Original">
+                    <div class="comparison-label">Web Image Step=20</div>
+                </div>
+            </div>
+            
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="proj5a/unrealistic/drawn_image1_start_1.png" alt="Drawn 1 Original">
+                    <div class="comparison-label">Hand-Drawn 1 Step=1</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/unrealistic/drawn_image1_start_3.png" alt="Drawn 1 Original">
+                    <div class="comparison-label">Hand-Drawn 1 Step=3</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/unrealistic/drawn_image1_start_5.png" alt="Drawn 1 Original">
+                    <div class="comparison-label">Hand-Drawn 1 Step=5</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/unrealistic/drawn_image1_start_7.png" alt="Drawn 1 Original">
+                    <div class="comparison-label">Hand-Drawn 1 Step=7</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/unrealistic/drawn_image1_start_10.png" alt="Drawn 1 Original">
+                    <div class="comparison-label">Hand-Drawn 1 Step=10</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/unrealistic/drawn_image1_start_20.png" alt="Drawn 1 Original">
+                    <div class="comparison-label">Hand-Drawn 1 Step=20</div>
+                </div>
+            </div>
+            
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="proj5a/unrealistic/drawn_image2_start_1.png" alt="Drawn 1 Original">
+                    <div class="comparison-label">Hand-Drawn 2 Step=1</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/unrealistic/drawn_image2_start_3.png" alt="Drawn 1 Original">
+                    <div class="comparison-label">Hand-Drawn 2 Step=3</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/unrealistic/drawn_image2_start_5.png" alt="Drawn 1 Original">
+                    <div class="comparison-label">Hand-Drawn 2 Step=5</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/unrealistic/drawn_image2_start_7.png" alt="Drawn 1 Original">
+                    <div class="comparison-label">Hand-Drawn 2 Step=7</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/unrealistic/drawn_image2_start_10.png" alt="Drawn 1 Original">
+                    <div class="comparison-label">Hand-Drawn 2 Step=10</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/unrealistic/drawn_image2_start_20.png" alt="Drawn 1 Original">
+                    <div class="comparison-label">Hand-Drawn 1 Step=20</div>
+                </div>
+            </div>
+            
+            <h4>Part 1.7.3: Inpainting</h4>
+            <p>Implemented inpainting by combining known regions with diffusion-generated content.</p>
+            
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="proj5a/inpainting_results/campanile/original_campanile.png" alt="Inpaint Original">
+                    <div class="comparison-label">Original with Mask</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/inpainting_results/campanile/mask.png" alt="Inpaint Mask">
+                    <div class="comparison-label">Mask</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/inpainting_results/campanile/final_inpainted_campanile.png" alt="Inpaint Result">
+                    <div class="comparison-label">Inpainting Result</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/inpainting_results/campanile/campanile_attempt_1.png" alt="Inpaint Result">
+                    <div class="comparison-label">Attempt1</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/inpainting_results/campanile/campanile_attempt_2.png" alt="Inpaint Result">
+                    <div class="comparison-label">Attempt2</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/inpainting_results/campanile/campanile_attempt_3.png" alt="Inpaint Result">
+                    <div class="comparison-label">Attempt3</div>
+                </div>
+            </div>
+
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="proj5a/inpainting_results/custom_images/test_image_1/original.png" alt="Inpaint Original">
+                    <div class="comparison-label">Original</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/inpainting_results/custom_images/test_image_1/mask.png" alt="Inpaint Mask">
+                    <div class="comparison-label">Mask</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/inpainting_results/custom_images/test_image_1/region_to_replace.png" alt="Inpaint Result">
+                    <div class="comparison-label">Region to inpaint</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/inpainting_results/custom_images/test_image_1/final_inpainted.png" alt="Inpaint Result">
+                    <div class="comparison-label">Result</div>
+                </div>
+            </div>
+
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="proj5a/inpainting_results/custom_images/test_image_2/original.png" alt="Inpaint Original">
+                    <div class="comparison-label">Original</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/inpainting_results/custom_images/test_image_2/mask.png" alt="Inpaint Mask">
+                    <div class="comparison-label">Mask</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/inpainting_results/custom_images/test_image_2/region_to_replace.png" alt="Inpaint Result">
+                    <div class="comparison-label">Region to inpaint</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/inpainting_results/custom_images/test_image_2/final_inpainted.png" alt="Inpaint Result">
+                    <div class="comparison-label">Result</div>
+                </div>
+            </div>
+            
+            <h4>Part 1.7.4: Text-Conditional Image-to-Image</h4>
+            <p>Applied text-guided image editing to transform images based on prompts.</p>
+            
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="proj5a/text_conditioned_results/campanile/campanile_denoised_start1.png" alt="SDEdit i_start=1">
+                    <div class="comparison-label">SDEdit i_start=1</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/text_conditioned_results/campanile/campanile_denoised_start3.png" alt="SDEdit i_start=3">
+                    <div class="comparison-label">SDEdit i_start=3</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/text_conditioned_results/campanile/campanile_denoised_start5.png" alt="SDEdit i_start=5">
+                    <div class="comparison-label">SDEdit i_start=5</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/text_conditioned_results/campanile/campanile_denoised_start7.png" alt="SDEdit i_start=7">
+                    <div class="comparison-label">SDEdit i_start=7</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/text_conditioned_results/campanile/campanile_denoised_start10.png" alt="SDEdit i_start=10">
+                    <div class="comparison-label">SDEdit i_start=10</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/text_conditioned_results/campanile/campanile_denoised_start20.png" alt="SDEdit i_start=20">
+                    <div class="comparison-label">SDEdit i_start=20</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/text_conditioned_results/campanile/original_campanile.png" alt="SDEdit i_start=20">
+                    <div class="comparison-label">Original</div>
+                </div>
+            </div>
+            
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="proj5a/text_conditioned_results/custom_images/img1denoised_start1.png" alt="SDEdit i_start=1">
+                    <div class="comparison-label">SDEdit i_start=1</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/text_conditioned_results/custom_images/img1denoised_start3.png" alt="SDEdit i_start=3">
+                    <div class="comparison-label">SDEdit i_start=3</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/text_conditioned_results/custom_images/img1denoised_start5.png" alt="SDEdit i_start=5">
+                    <div class="comparison-label">SDEdit i_start=5</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/text_conditioned_results/custom_images/img1denoised_start7.png" alt="SDEdit i_start=7">
+                    <div class="comparison-label">SDEdit i_start=7</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/text_conditioned_results/custom_images/img1denoised_start10.png" alt="SDEdit i_start=10">
+                    <div class="comparison-label">SDEdit i_start=10</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/text_conditioned_results/custom_images/img1denoised_start20.png" alt="SDEdit i_start=20">
+                    <div class="comparison-label">SDEdit i_start=20</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/text_conditioned_results/custom_images/img1original.png" alt="SDEdit i_start=20">
+                    <div class="comparison-label">Original</div>
+                </div>
+            </div>
+
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="proj5a/text_conditioned_results/custom_images/img2denoised_start1.png" alt="SDEdit i_start=1">
+                    <div class="comparison-label">SDEdit i_start=1</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/text_conditioned_results/custom_images/img2denoised_start3.png" alt="SDEdit i_start=3">
+                    <div class="comparison-label">SDEdit i_start=3</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/text_conditioned_results/custom_images/img2denoised_start5.png" alt="SDEdit i_start=5">
+                    <div class="comparison-label">SDEdit i_start=5</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/text_conditioned_results/custom_images/img2denoised_start7.png" alt="SDEdit i_start=7">
+                    <div class="comparison-label">SDEdit i_start=7</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/text_conditioned_results/custom_images/img2denoised_start10.png" alt="SDEdit i_start=10">
+                    <div class="comparison-label">SDEdit i_start=10</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/text_conditioned_results/custom_images/img2denoised_start20.png" alt="SDEdit i_start=20">
+                    <div class="comparison-label">SDEdit i_start=20</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/text_conditioned_results/custom_images/img2original.png" alt="SDEdit i_start=20">
+                    <div class="comparison-label">Original</div>
+                </div>
+            </div>
+
+            <h3>Part 1.8: Visual Anagrams</h3>
+            <p>Created optical illusions that change appearance when flipped upside down.</p>
+            
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="proj5a/anagram_hybrid_results/anagram_1_original.png" alt="Anagram 1 Normal">
+                    <div class="comparison-label">Anagram 1 - Normal</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/anagram_hybrid_results/anagram_1_flipped.png" alt="Anagram 1 Flipped">
+                    <div class="comparison-label">Anagram 1 - Flipped</div>
+                </div>
+            </div>
+            
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="proj5a/anagram_hybrid_results/anagram_2_original.png" alt="Anagram 2 Normal">
+                    <div class="comparison-label">Anagram 2 - Normal</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/anagram_hybrid_results/anagram_2_flipped.png" alt="Anagram 2 Flipped">
+                    <div class="comparison-label">Anagram 2 - Flipped</div>
+                </div>
+            </div>
+            
+            <h3>Part 1.9: Hybrid Images</h3>
+            <p>Created hybrid images by combining low and high frequencies from different prompts.</p>
+            
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="proj5a/anagram_hybrid_results/hybrid1.png" alt="Hybrid 1">
+                    <div class="comparison-label">Hybrid Image 1</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/anagram_hybrid_results/hybrid2.png" alt="Hybrid 2">
+                    <div class="comparison-label">Hybrid Image 2</div>
+                </div>
+            </div>
+        </section>
+    
+        
+        <section id="conclusion">
+            <h2>Conclusion</h2>
+            <p>This project explored the capabilities of diffusion models through various applications:</p>
+            
+            <ul>
+                <li><strong>Text-to-image generation</strong> using DeepFloyd IF produces diverse and creative outputs</li>
+                <li><strong>Iterative denoising</strong> enables high-quality image reconstruction from noisy inputs</li>
+                <li><strong>Classifier-free guidance</strong> significantly improves output quality and alignment with prompts</li>
+                <li><strong>Image editing techniques</strong> like SDEdit, inpainting, and text-guided translation provide powerful creative tools</li>
+                <li><strong>Optical illusions</strong> through visual anagrams and hybrid images demonstrate the flexibility of diffusion models</li>
+            </ul>
+            
+            <p>Diffusion models represent a powerful paradigm for generative AI with applications across creative domains.</p>
+        </section>
+        
+
+                <header>
+            <h1>Project 5B: Flow Matching from Scratch</h1>
+            <p class="subtitle">Training flow matching models on MNIST from scratch</p>
+        </header>
+        
+        <section id="part1b">
+            <h2>Part 1: Training a Single-Step Denoising UNet</h2>
+            
+            <h3>Part 1.1: Implementing the UNet</h3>
+            <p>Implemented the UNet architecture with downsampling and upsampling blocks with skip connections.</p>
+            
+            <h3>Part 1.2: Using the UNet to Train a Denoiser</h3>
+            
+            <h4>Noising Process Visualization</h4>
+            <p>Visualization of the noising process with different σ values:</p>
+            <div class="figure-center">
+                <img src="proj5b/add_noise.png" alt="add_noise">
+                <div class="label">Adding Noise</div>
+            </div>
+            
+            <h4>Part 1.2.1: Training Results</h4>
+            <p>Training loss curve over 5 epochs:</p>
+            <img src="proj5b/unconditional_loss.png" alt="Training Loss Curve" style="max-width: 600px; margin: 20px auto; display: block;">
+            
+            <p>Sample denoising results on test set (σ = 0.5):</p>
+            <div class="figure-center">
+                <img src="proj5b/unconditional_epoch1.png" alt="Epoch 1">
+                <div class="label">After 1 Epoch</div>
+            </div>
+            <div class="figure-center">
+                <img src="proj5b/unconditional_epoch2.png" alt="Epoch 2">
+                <div class="label">After 2 Epochs</div>
+            </div>
+            <div class="figure-center">
+                <img src="proj5b/unconditional_epoch3.png" alt="Epoch 3">
+                <div class="label">After 3 Epochs</div>
+            </div>
+            <div class="figure-center">
+                <img src="proj5b/unconditional_epoch4.png" alt="Epoch 4">
+                <div class="label">After 4 Epochs</div>
+            </div>
+            <div class="figure-center">
+                <img src="proj5b/unconditional_epoch5.png" alt="Epoch 5">
+                <div class="label">After 5 Epochs</div>
+            </div>
+            
+            
+            <h4>Part 1.2.2: Out-of-Distribution Testing</h4>
+            <p>Denoiser performance on varying noise levels σ:</p>
+            <div class="figure-center">
+                <img src="proj5b/ood.png" alt="ood">
+                <div class="label">Out of distribution results</div>
+            </div>
+            
+            <h4>Part 1.2.3: Denoising Pure Noise</h4>
+            <p>Training loss curve for pure noise denoising:</p>
+            <img src="proj5b/pure_noise_curve.png" alt="Pure Noise Training Loss" style="max-width: 600px; margin: 20px auto; display: block;">
+            
+            <p>Denoising results on pure noise:</p>
+            <div class="figure-center">
+                <img src="proj5b/pure_noise1.png" alt="Pure Noise Epoch 1">
+                <div class="label">After 1 Epoch</div>
+            </div>
+            <div class="figure-center">
+                <img src="proj5b/pure_noise_5.png" alt="Pure Noise Epoch 5">
+                <div class="label">After 5 Epochs</div>
+            </div>
+            
+            <h5>Analysis</h5>
+            <p>The pure noise denoising outputs show that the model learns to 
+                predict the average of the training distribution. The patterns 
+                observed are blurry, indistinct shapes that resemble an average 
+                of all MNIST digits rather than specific digits. This happens 
+                because when the model is trained on pure noise with an L2 loss, 
+                it learns to predict the mean of the training distribution that 
+                minimizes the squared error. Since it's trained on noise without 
+                any conditioning, it produces what looks like a "centroid" of all 
+                digits rather than generating specific digit classes.</p>
+        </section>
+        
+        <section id="part2b">
+            <h2>Part 2: Training a Flow Matching Model</h2>
+            
+            <h3>Part 2.1-2.2: Time-Conditioned UNet Training</h3>
+            <p>Training loss curve for time-conditioned UNet:</p>
+            <img src="proj5b/time_loss.png" alt="Time-Conditioned Loss Curve" style="max-width: 600px; margin: 20px auto; display: block;">
+            
+            <h3>Part 2.3: Sampling from Time-Conditioned UNet</h3>
+            <p>Sampling results after different epochs:</p>
+            <div class="figure-center">
+                <img src="proj5b/time_epoch1.png" alt="Epoch 1 Time Sampling">
+                <div class="label">After 1 Epoch</div>
+            </div>
+            <div class="figure-center">
+                <img src="proj5b/time_epoch5.png" alt="Epoch 5 Time Sampling">
+                <div class="label">After 5 Epochs</div> 
+            </div>
+            <div class="figure-center">
+                <img src="proj5b/time_epoch10.png" alt="Epoch 10 Time Sampling">
+                <div class="label">After 10 Epochs</div>
+            </div>
+            
+            <h3>Part 2.4-2.5: Class-Conditioned UNet Training</h3>
+            <p>Training loss curve for class-conditioned UNet:</p>
+            <img src="proj5b/class_loss.png" alt="Class-Conditioned Loss Curve" style="max-width: 600px; margin: 20px auto; display: block;">
+            
+            <h3>Part 2.6: Sampling from Class-Conditioned UNet</h3>
+            <p>Sampling results with classifier-free guidance (w = 3.0):</p>
+            <div class="figure-center">
+                <img src="proj5b/class_epoch1.png" alt="Epoch 1 Class Sampling">
+                <div class="label">After 1 Epoch</div>
+            </div>
+            <div class="figure-center">
+                <img src="proj5b/class_epoch5.png" alt="Epoch 5 Class Sampling">
+                <div class="label">After 5 Epochs</div>
+            </div>
+            <div class="figure-center">
+                <img src="proj5b/class_epoch10.png" alt="Epoch 10 Class Sampling">
+                <div class="label">After 10 Epochs</div>
+            </div>
+            
+            <h4>Learning Rate Scheduler Ablation</h4>
+            <p>To evaluate the necessity of the exponential learning rate scheduler, I conducted a controlled experiment comparing two training strategies for the class-conditional UNet:</p>
+
+            <h5>Strategy 1: With Exponential LR Scheduler</h5>
+            <ul>
+                <li><strong>Initial Learning Rate:</strong> 1e-2 (higher initial rate)</li>
+                <li><strong>Scheduler:</strong> StepLR with step_size=5, gamma=0.5 (halves learning rate every 5 epochs)</li>
+                <li><strong>Regularization:</strong> None explicitly applied</li>
+                <li><strong>Gradient Handling:</strong> No gradient clipping</li>
+            </ul>
+
+            <h5>Strategy 2: Without Scheduler (Modified Approach)</h5>
+            <ul>
+                <li><strong>Initial Learning Rate:</strong> 1e-3 (10x lower than Strategy 1)</li>
+                <li><strong>Scheduler:</strong> None (constant learning rate throughout training)</li>
+                <li><strong>Regularization:</strong> Added weight decay of 2e-4 to prevent overfitting</li>
+                <li><strong>Gradient Handling:</strong> Applied gradient clipping with max_norm=1.0 for stability</li>
+                <li><strong>Training Extension:</strong> Increased training to 8 epochs (vs 5 in scheduler approach) for better convergence</li>
+            </ul>
+
+            <h5>Key Findings & Analysis:</h5>
+            <p>The modified approach without a scheduler achieved comparable performance through several compensatory strategies:</p>
+            <ol>
+                <li><strong>Lower Initial Learning Rate:</strong> Starting at 1e-3 instead of 1e-2 provided more stable training from the beginning, preventing the large fluctuations that typically require a scheduler to manage.</li>
+                <li><strong>Regularization Techniques:</strong> The addition of weight decay (2e-4) helped prevent overfitting and stabilized the training process without needing learning rate adjustments.</li>
+                <li><strong>Gradient Clipping:</strong> By limiting gradient norms to 1.0, I prevented explosive gradient updates that often necessitate learning rate reduction through schedulers.</li>
+                <li><strong>Extended Training:</strong> The model was trained for 8 epochs instead of 5, allowing it to converge more gradually to a similar final loss value.</li>
+            </ol>
+
+            <p>The results show that while the scheduler-based approach converges faster initially, the modified constant-LR strategy can achieve similar final performance through careful hyperparameter tuning and regularization. This demonstrates that learning rate schedulers are not strictly necessary but rather provide a convenient way to manage training dynamics that can also be achieved through other means.</p>
+            <img src="proj5b/no_scheduler_loss.png" alt="Class-Conditioned Loss Curve without scheduler" style="max-width: 600px; margin: 20px auto; display: block;">
+            
+            <div class="figure-center">
+                <img src="proj5b/no_scheduler1.png" alt="Epoch 1 Class Sampling">
+                <div class="label">After 1 Epoch</div>
+            </div>
+            <div class="figure-center">
+                <img src="proj5b/no_scheduler5.png" alt="Epoch 5 Class Sampling">
+                <div class="label">After 5 Epochs</div>
+            </div>
+            <div class="figure-center">
+                <img src="proj5b/no_scheduler10.png" alt="Epoch 10 Class Sampling">
+                <div class="label">After 10 Epochs</div>
+            </div>
+        </section>
+        
+        
+        <section id="conclusionB">
+            <h2>Part B Conclusion</h2>
+            <p>In this part, we implemented and trained flow matching models from scratch. Key findings:</p>
+            <ul>
+                <li>Single-step denoising UNet works well for in-distribution noise levels but struggles with out-of-distribution noise</li>
+                <li>Pure noise denoising produces [YOUR FINDINGS]</li>
+                <li>Time-conditioned flow matching enables iterative denoising for generation</li>
+                <li>Class-conditioning improves control and convergence speed</li>
+                <li>Classifier-free guidance enhances output quality and class alignment</li>
+            </ul>
+        </section>
+
+        
+        <script>
+            // Simple page loading animation (same as previous project)
+            document.addEventListener('DOMContentLoaded', function() {
+                const sections = document.querySelectorAll('section');
+                
+                sections.forEach((section, index) => {
+                    section.style.opacity = '0';
+                    section.style.transform = 'translateY(20px)';
+                    
+                    setTimeout(() => {
+                        section.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                        section.style.opacity = '1';
+                        section.style.transform = 'translateY(0)';
+                    }, index * 200);
+                });
+            });
+        </script>
+    </div>
+</body>
+</html>
