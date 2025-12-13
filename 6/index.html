@@ -17,17 +17,13 @@
             <h2>Part 0: Setup and Text-to-Image Generation</h2>
             <p>In this part, we set up the DeepFloyd IF diffusion model and generate images from text prompts.</p>
             
-            <h3>Part 0.1: Model Setup and Prompt Embeddings</h3>
-            <p>We created a Hugging Face account, accepted the DeepFloyd license, and generated prompt embeddings for custom text prompts.</p>
-            
-            <h3>Part 0.2: Text-to-Image Results</h3>
-            <p>Generated images using custom text prompts with different inference steps:
-                <br>prompts:<br>
-                prompt1:A chicken and a monkey hybrid<br>
-                prompt2:A river flowing with liquid starlight through a dark forest<br>
-                prompt3:A dragon made of crystal and light, sleeping on a mountain of gems<br>
-                prompt4:explosion in the water<br>
-                prompt5:A book made of bugs<br>
+                <br><strong>Used Prompts:</strong><br>
+                Prompt1: A chicken and a monkey hybrid<br>
+                Prompt2: A river flowing with liquid starlight through a dark forest<br>
+                Prompt3: A dragon made of crystal and light, sleeping on a mountain of gems<br>
+                Prompt4: Explosion in the water<br>
+                Prompt5: A book made of bugs<br>
+                <br>
                 Below I will show generated image of each prompt with 20 and 80 inference steps.<br>
                 <br>
             </p>
@@ -35,58 +31,72 @@
             <div class="comparison-container">
                 <div class="comparison-item">
                     <img src="images/generate20/01_a_chicken_and_a_monkey_hybrid.png" alt="Prompt 1 - 20 steps">
-                    <div class="comparison-label">"Prompt 1" - 20 steps</div>
+                    <div class="comparison-label">Prompt 1 - 20 steps</div>
                 </div>
                 <div class="comparison-item">
                     <img src="images/generate80/00_a_chicken_and_a_monkey_hybrid.png" alt="Prompt 1 - 80 steps">
-                    <div class="comparison-label">"Prompt 1" - 80 steps</div>
+                    <div class="comparison-label">Prompt 1 - 80 steps</div>
                 </div>
             </div>
             
             <div class="comparison-container">
                 <div class="comparison-item">
                     <img src="images/generate20/03_A_river_flowing_with_liquid_st.png" alt="Prompt 2 - 20 steps">
-                    <div class="comparison-label">"Prompt 2" - 20 steps</div>
+                    <div class="comparison-label">Prompt 2 - 20 steps</div>
                 </div>
                 <div class="comparison-item">
                     <img src="images/generate80/01_A_river_flowing_with_liquid_st.png" alt="Prompt 2 - 80 steps">
-                    <div class="comparison-label">"Prompt 2" - 80 steps</div>
+                    <div class="comparison-label">Prompt 2 - 80 steps</div>
                 </div>
             </div>
 
             <div class="comparison-container">
                 <div class="comparison-item">
                     <img src="images/generate20/04_A_dragon_made_of_crystal_and_l.png" alt="Prompt 3 - 20 steps">
-                    <div class="comparison-label">"Prompt 3" - 20 steps</div>
+                    <div class="comparison-label">Prompt 3 - 20 steps</div>
                 </div>
                 <div class="comparison-item">
                     <img src="images/generate80/02_A_dragon_made_of_crystal_and_l.png" alt="Prompt 3 - 80 steps">
-                    <div class="comparison-label">"Prompt 3" - 80 steps</div>
+                    <div class="comparison-label">Prompt 3 - 80 steps</div>
                 </div>
             </div>
             
             <div class="comparison-container">
                 <div class="comparison-item">
                     <img src="images/generate20/09_explosion_in_the_water.png" alt="Prompt 4 - 20 steps">
-                    <div class="comparison-label">"Prompt 4" - 20 steps</div>
+                    <div class="comparison-label">Prompt 4 - 20 steps</div>
                 </div>
                 <div class="comparison-item">
                     <img src="images/generate80/03_explosion_in_the_water.png" alt="Prompt 4 - 80 steps">
-                    <div class="comparison-label">"Prompt 4" - 80 steps</div>
+                    <div class="comparison-label">Prompt 4 - 80 steps</div>
                 </div>
             </div>
 
             <div class="comparison-container">
                 <div class="comparison-item">
                     <img src="images/generate20/10_a_book_made_of_bugs.png" alt="Prompt 5 - 20 steps">
-                    <div class="comparison-label">"Prompt 5" - 20 steps</div>
+                    <div class="comparison-label">Prompt 5 - 20 steps</div>
                 </div>
                 <div class="comparison-item">
                     <img src="images/generate80/04_a_book_made_of_bugs.png" alt="Prompt 5 - 80 steps">
-                    <div class="comparison-label">"Prompt 5" - 80 steps</div>
+                    <div class="comparison-label">Prompt 5 - 80 steps</div>
                 </div>
             </div>
+            <h4>Reflection:</h4>
+            <p>When I run the model to generate image with 80 steps, the quality of the image is better. 
+                More specifically, I feel there is less blurry and uncertain parts in the image. However, more 
+                steps doesn't necessarily gives more alignment with the prompt. Like the star went into the sky which is not 
+                intended (in the 80-step image), but in another case the 80-step image better capture the "sleeping dragon".
+                <br>
+                I've run the model multiple times with different steps, I observe that the generated images are 
+                generally consistent with the prompt, though being slightly different in <strong>the way they are 
+                consistent with the prompt.</strong> For example, for monkey and chicken hybrid, the 20-step
+                image uses chicken feet and the 80-step one uses chicken feathers. The bugs in the book are also 
+                presented in different ways. The generated images might not be realistic or plausible but they all try
+                to capture the texture and feature of items related to their prompts.
 
+
+            </p>
             
             <h4>Random Seed</h4>
             <p><strong>Used seed:</strong> 100 (used consistently throughout all experiments)</p>
@@ -96,7 +106,16 @@
             <h2>Part 1: Sampling Loops and Diffusion Techniques</h2>
             
             <h3>Part 1.1: Forward Process Implementation</h3>
-            <p>Implemented the forward process to add noise to images at different timesteps.</p>
+            <p>The forward process adds noise to images following: x_t = √ᾱ_t * x_0 + √(1-ᾱ_t) * ε
+                <br>
+                <strong>Implementation:</strong>
+                <br>
+                <strong>Noise Schedule Access:</strong> Used the provided alphas_cumprod tensor containing ᾱ values for all 1000 timesteps.
+                <br>
+                <strong>Gaussian Noise Generation:</strong> Created noise with torch.randn_like(x₀) matching the original image dimensions.
+                <br>
+                <strong>Proper Scaling:</strong> Applied √ᾱₜ scaling to the original image and √(1-ᾱₜ) scaling to the noise tensor element-wise.
+            </p>
             
             <div class="comparison-container">
                 <div class="comparison-item">
@@ -118,8 +137,32 @@
             </div>
             
             <h3>Part 1.2: Classical Denoising with Gaussian Blur</h3>
-            <p>Applied Gaussian blur filtering to denoise the noisy Campanile images.</p>
+            <p>This baseline approach using traditional Gaussian filtering 
+                was intentionally simple to contrast with diffusion-based methods. 
+                <br>
+                <strong>Implementation:</strong>
+                <br>
+                <strong>Gaussian Filter Application:</strong> Used torchvision.transforms.functional.gaussian_blur() with kernel size and sigma parameters.
+                <br>
+                <strong>Parameter Tuning:</strong> Experimented with different σ values (1.0, 1.5, 2.0) for different noise levels.
+                <br>
+            </p>
             
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="proj5a/noisy_imgs/t=250.png" alt="t=250">
+                    <div class="comparison-label">Noisy Campanile at t=250</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/noisy_imgs/t=500.png" alt="t=500">
+                    <div class="comparison-label">Noisy Campanile at t=500</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/noisy_imgs/t=750.png" alt="t=750">
+                    <div class="comparison-label">Noisy Campanile at t=750</div>
+                </div>
+            </div>
+
             <div class="comparison-container">
                 <div class="comparison-item">
                     <img src="proj5a/classical_denoise/t=250_sigma=1.0.png" alt="Gaussian t=250">
@@ -136,8 +179,29 @@
             </div>
             
             <h3>Part 1.3: One-Step Denoising with Diffusion Model</h3>
-            <p>Used the pretrained UNet to perform one-step denoising on noisy images.</p>
-            
+            <p>The key insight here was using the model's noise prediction combined with the proper 
+                scaling factors from the diffusion method. 
+                <br>
+                <strong>Implementation:</strong>
+                <br>
+                <strong>Model Preparation:</strong> Ensured inputs matched the model's expected format
+                <br>
+                <strong>Signal Extraction:</strong> Remove noise to recover clean image estimate.
+            </p>
+            <div class="comparison-container">
+                <div class="comparison-item">
+                    <img src="proj5a/noisy_imgs/t=250.png" alt="t=250">
+                    <div class="comparison-label">Noisy Campanile at t=250</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/noisy_imgs/t=500.png" alt="t=500">
+                    <div class="comparison-label">Noisy Campanile at t=500</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/noisy_imgs/t=750.png" alt="t=750">
+                    <div class="comparison-label">Noisy Campanile at t=750</div>
+                </div>
+            </div>
             <div class="comparison-container">
                 <div class="comparison-item">
                     <img src="proj5a/1step_denoise/t=250.png" alt="One-step t=250">
@@ -154,31 +218,43 @@
             </div>
             
             <h3>Part 1.4: Iterative Denoising</h3>
-            <p>Implemented iterative denoising with strided timesteps for more efficient sampling.</p>
+            <p>
+                <strong>Implementation:</strong>
+                <br>
+                <strong>Scheduler Initialization:</strong> Called <code>stage_1.scheduler.set_timesteps(strided_timesteps)</code> to configure the diffusion scheduler with our custom schedule.
+                <br>
+                <strong>Iterative Loop Execution:</strong> For each pair of consecutive timesteps from t[i] to t[i+1]:
+                    <ul>
+                        <li><strong>Noise Prediction:</strong> Passed the current noisy image through the UNet to estimate the noise component ε_pred</li>
+                        <li><strong>Clean Image Estimation:</strong> Applied the reverse diffusion formula to estimate the clean image x₀ from the noisy image and predicted noise</li>
+                        <li><strong>Variance Addition:</strong> Used the provided <code>add_variance</code> function to combine predicted noise with variance estimates for diversity</li>
+                        <li><strong>Next State Computation:</strong> Interpolated between the estimated clean image and noise to obtain the image at the next timestep</li>
+                    </ul>
+            </p>
             
             <div class="comparison-container">
                 <div class="comparison-item">
-                    <img src="proj5a/iterative_denoise/denoising_step_000.png" alt="Iterative t=90">
-                    <div class="comparison-label">Iterative Denoising t=90</div>
-                </div>
-                <div class="comparison-item">
-                    <img src="proj5a/iterative_denoise/denoising_step_005.png" alt="Iterative t=240">
-                    <div class="comparison-label">Iterative Denoising t=240</div>
-                </div>
-                <div class="comparison-item">
-                    <img src="proj5a/iterative_denoise/denoising_step_010.png" alt="Iterative t=390">
-                    <div class="comparison-label">Iterative Denoising t=390</div>
-                </div>
-                <div class="comparison-item">
-                    <img src="proj5a/iterative_denoise/denoising_step_015.png" alt="Iterative t=540">
-                    <div class="comparison-label">Iterative Denoising t=540</div>
-                </div>
-                <div class="comparison-item">
-                    <img src="proj5a/iterative_denoise/denoising_step_020.png" alt="Iterative t=690">
+                    <img src="proj5a/iterative_denoise/1denoising_step_000.png" alt="Iterative t=690">
                     <div class="comparison-label">Iterative Denoising t=690</div>
                 </div>
                 <div class="comparison-item">
-                    <img src="proj5a/iterative_denoise/final_denoised.png" alt="Iterative Final">
+                    <img src="proj5a/iterative_denoise/1denoising_step_005.png" alt="Iterative t=540">
+                    <div class="comparison-label">Iterative Denoising t=540</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/iterative_denoise/1denoising_step_010.png" alt="Iterative t=240">
+                    <div class="comparison-label">Iterative Denoising t=240</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/iterative_denoise/1denoising_step_015.png" alt="Iterative t=390">
+                    <div class="comparison-label">Iterative Denoising t=390</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/iterative_denoise/1denoising_step_020.png" alt="Iterative t=90">
+                    <div class="comparison-label">Iterative Denoising t=90</div>
+                </div>
+                <div class="comparison-item">
+                    <img src="proj5a/iterative_denoise/1final_denoised.png" alt="Iterative Final">
                     <div class="comparison-label">Final Iterative Denoised</div>
                 </div>
                 <div class="comparison-item">
@@ -196,7 +272,16 @@
             </div>
             
             <h3>Part 1.5: Diffusion Model Sampling</h3>
-            <p>Generated images from pure noise using the diffusion model.</p>
+            <p>Generated images from pure noise using the diffusion model.
+                <br>
+                <strong>Implementation:</strong>
+                <br>
+                <strong>Noise Initialization:</strong> Created tensor of pure Gaussian noise: torch.randn((1,3,64,64), device=device).half()
+                <br>
+                <strong>Full Denoising Loop:</strong> Started at i_start=0 (t=990) and denoised completely to t=0.
+                <br>
+                <strong>Prompt Conditioning:</strong> Used "a high quality photo" embeddings as weak conditioning.
+            </p>
             
             <div class="comparison-container">
                 <div class="comparison-item">
@@ -222,7 +307,19 @@
             </div>
             
             <h3>Part 1.6: Classifier-Free Guidance (CFG)</h3>
-            <p>Implemented CFG to improve image quality by combining conditional and unconditional noise estimates.</p>
+            <p>Implemented CFG to improve image quality by combining conditional and unconditional noise estimates.
+                <br>
+                <strong>Implementation:</strong>
+                <br>
+                <strong>Dual Forward Passes:</strong>
+                <ul>
+                    <li>Conditional pass: UNet with target prompt embeddings</li>
+                    <li>Unconditional pass: UNet with empty string embeddings</li>
+                </ul>
+                <strong>Noise Combination:</strong> ε_cfg = ε_uncond + w*(ε_cond - ε_uncond)
+                <br>
+                <strong>Variance Handling:</strong> Used only the conditional variance estimate for the add_variance function.
+            </p>
             
             <div class="comparison-container">
                 <div class="comparison-item">
@@ -251,7 +348,21 @@
             
             <h4>Part 1.7.1: SDEdit on Campanile</h4>
             <p>Applied SDEdit at different noise levels to create edits of the Campanile image.</p>
-            
+            <p><strong>Implementation:</strong>
+                <br>
+                <strong>Partial Noising Process:</strong>
+                <ul>
+                    <li>Added Gaussian noise up to timestep t[i_start] using forward diffusion equation: xₜ = √ᾱₜ·x₀ + √(1-ᾱₜ)·ε</li>
+                    <li>Used cumulative noise schedule parameters (alphas_cumprod) for proper noise scaling</li>
+                </ul>
+                <strong>Conditional Denoising:</strong>
+                <ul>
+                    <li>Applied iterative denoising with classifier-free guidance (CFG scale=7.0)</li>
+                    <li>Used prompt "a high quality photo" for weak conditioning</li>
+                    <li>Tested i_start values [1,3,5,7,10,20] to control edit strength</li>
+                </ul>
+                <strong>Trade-off Control:</strong> Lower i_start values preserve original structure; higher values enable more creative transformation
+            </p>
             <div class="comparison-container">
                 <div class="comparison-item">
                     <img src="proj5a/img-img_translation/campanile_denoised_start1.png" alt="SDEdit i_start=1">
@@ -336,7 +447,22 @@
             
             <h4>Part 1.7.2: Web and Hand-Drawn Images</h4>
             <p>Applied SDEdit to web images and hand-drawn sketches.</p>
-            
+            <p><strong>Implementation:</strong>
+                <br>
+                <strong>Image Preprocessing:</strong>
+                <ul>
+                    <li>Web images: Downloaded and resized to 64×64 using bilinear interpolation</li>
+                    <li>Hand-drawn images: Center-cropped from 300×600 canvas to 64×64 square</li>
+                    <li>Normalized pixel values to [-1, 1] range to match model training distribution</li>
+                </ul>
+                <strong>Manifold Projection:</strong>
+                <ul>
+                    <li>Applied SDEdit algorithm to project unrealistic inputs onto natural image manifold</li>
+                    <li>Model inferred realistic interpretations from abstract representations</li>
+                    <li>Demonstrated strong priors about real-world object shapes and textures</li>
+                </ul>
+                </p>
+
             <div class="comparison-container">
                 <div class="comparison-item">
                     <img src="proj5a/unrealistic/web1.png" alt="Web Original">
@@ -420,7 +546,27 @@
             
             <h4>Part 1.7.3: Inpainting</h4>
             <p>Implemented inpainting by combining known regions with diffusion-generated content.</p>
-            
+            <p><strong>Implementation:</strong>
+                <br>
+                <strong>Algorithm Steps:</strong>
+                    For each denoising step from t=i_start to t=0:<br>
+                    <ul>
+                    <li>Step 1: Generate denoised estimate: x_t_denoised = denoise_one_step(x_t, t)</li>
+                    <li>Step 2: Blend with known regions: x_t = mask * x_0_noisy_t + (1-mask) * x_t_denoised</li>
+                    <li>Step 3: Proceed to next timestep: x_{t-1} = forward(x_t, t-1)</li>
+                </ul>
+                <strong>Mask Processing:</strong>
+                <ul>
+                    <li>Binary mask with 1=known region (maintain), 0=unknown region (inpaint)</li>
+                    <li>x_0_noisy_t: Original image with noise added at timestep t using forward process</li>
+                </ul>
+                <strong>Implementation Challenges:</strong>
+                <ul>
+                    <li>Required multiple sampling attempts for coherent results</li>
+                    <li>Ensured proper noise levels in known regions at each timestep</li>
+                    <li>Model wasn't specifically trained for inpainting, requiring stochastic exploration</li>
+                </ul>
+                </p>
             <div class="comparison-container">
                 <div class="comparison-item">
                     <img src="proj5a/inpainting_results/campanile/original_campanile.png" alt="Inpaint Original">
@@ -488,7 +634,25 @@
             
             <h4>Part 1.7.4: Text-Conditional Image-to-Image</h4>
             <p>Applied text-guided image editing to transform images based on prompts.</p>
-            
+            <p>I used <strong>'an oil painting of a snowy mountain village'</strong> as prompt in this part.</p>
+            <p><strong>Implementation:</strong>
+                <br>
+                <strong>Conditional SDEdit:</strong>
+                <ul>
+                    <li>Modified SDEdit to use specific text prompts instead of generic "high quality photo"</li>
+                    <li>Enabled controlled image transformations guided by semantic content</li>
+                </ul>
+                <strong>Noise Level Control:</strong>
+                <ul>
+                    <li>Low noise (i_start=1-3): Preserves original composition with subtle text influence</li>
+                    <li>High noise (i_start=10-20): Strong text alignment with major structural changes</li>
+                </ul>
+                <strong>Prompt Engineering:</strong>
+                <ul>
+                    <li>Used descriptive prompts for clear transformation direction</li>
+                    <li>Experimented with different phrasing to achieve desired effects</li>
+                </ul>
+                </p>
             <div class="comparison-container">
                 <div class="comparison-item">
                     <img src="proj5a/text_conditioned_results/campanile/campanile_denoised_start1.png" alt="SDEdit i_start=1">
@@ -583,7 +747,23 @@
             </div>
 
             <h3>Part 1.8: Visual Anagrams</h3>
-            <p>Created optical illusions that change appearance when flipped upside down.</p>
+            <p>Created optical illusions that change appearance when flipped upside down.
+                The visual anagram algorithm creatively combined two different prompts by 
+                averaging noise estimates from original and flipped images. The success of 
+                visual anagrams depends heavily on compatible prompt pairs that can occupy 
+                similar spatial arrangements when flipped.
+            </p>
+            <p><strong>Implementation:</strong>
+                <br>
+                <strong>Algorithm Flow:</strong>
+                <ul>
+                    <li>During each denoising step at timestep t:</li>
+                    <li>Step 1: Predict noise for original image with first prompt: ε₁ = UNet(xₜ, prompt1)</li>
+                    <li>Step 2: Flip image 180°, predict noise with second prompt: ε₂ = flip(UNet(flip(xₜ), prompt2))</li>
+                    <li>Step 3: Average noise estimates: ε_avg = (ε₁ + ε₂) / 2</li>
+                    <li>Step 4: Use averaged noise in standard update equation: x_{t-1} = √ᾱ_{t-1}·x₀_estimate + √(1-ᾱ_{t-1})·ε_avg</li>
+                </ul>
+            </p>
             
             <div class="comparison-container">
                 <div class="comparison-item">
@@ -608,8 +788,24 @@
             </div>
             
             <h3>Part 1.9: Hybrid Images</h3>
-            <p>Created hybrid images by combining low and high frequencies from different prompts.</p>
-            
+            <p>This implementation combined frequency-domain processing with diffusion models. 
+                By separating noise estimates into low and high frequencies using Gaussian blur, 
+                then recombining them from different prompts, the technique created images that 
+                change interpretation with viewing distance.
+                <br>
+                Also, using different kernel sizes and sigma values for the Gaussian blur allowed 
+                control over the frequency separation, affecting the strength of the hybrid effect.</p>
+            <p><strong>Implementation:</strong>
+                <br>
+                <strong>Frequency Decomposition:</strong>
+                <ul>
+                    <li>For each denoising step at timestep t:</li>
+                    <li>Step 1: Predict noise for both prompts: ε₁ = UNet(xₜ, prompt1), ε₂ = UNet(xₜ, prompt2)</li>
+                    <li>Step 2: Apply Gaussian blur (kernel=13, σ=1.8) as low-pass filter: ε_low = gaussian_blur(ε₁)</li>
+                    <li>Step 3: Extract high frequencies: ε_high = ε₂ - gaussian_blur(ε₂)</li>
+                    <li>Step 4: Combine frequencies: ε_hybrid = ε_low + ε_high</li>
+                </ul>
+            </p>                
             <div class="comparison-container">
                 <div class="comparison-item">
                     <img src="proj5a/anagram_hybrid_results/hybrid1.png" alt="Hybrid 1">
@@ -622,21 +818,7 @@
             </div>
         </section>
     
-        
-        <section id="conclusion">
-            <h2>Conclusion</h2>
-            <p>This project explored the capabilities of diffusion models through various applications:</p>
-            
-            <ul>
-                <li><strong>Text-to-image generation</strong> using DeepFloyd IF produces diverse and creative outputs</li>
-                <li><strong>Iterative denoising</strong> enables high-quality image reconstruction from noisy inputs</li>
-                <li><strong>Classifier-free guidance</strong> significantly improves output quality and alignment with prompts</li>
-                <li><strong>Image editing techniques</strong> like SDEdit, inpainting, and text-guided translation provide powerful creative tools</li>
-                <li><strong>Optical illusions</strong> through visual anagrams and hybrid images demonstrate the flexibility of diffusion models</li>
-            </ul>
-            
-            <p>Diffusion models represent a powerful paradigm for generative AI with applications across creative domains.</p>
-        </section>
+    
         
 
                 <header>
@@ -654,13 +836,16 @@
             
             <h4>Noising Process Visualization</h4>
             <p>Visualization of the noising process with different σ values:</p>
+            <p> This visualization is done without clipping to [0,1], and the noisy images in other parts are 
+                clipped to [0,1] for better visualization. 
+            </p>
             <div class="figure-center">
                 <img src="proj5b/add_noise.png" alt="add_noise">
                 <div class="label">Adding Noise</div>
             </div>
             
             <h4>Part 1.2.1: Training Results</h4>
-            <p>Training loss curve over 5 epochs:</p>
+            <p>Training loss curve for σ = 0.5 over 5 epochs:</p>
             <img src="proj5b/unconditional_loss.png" alt="Training Loss Curve" style="max-width: 600px; margin: 20px auto; display: block;">
             
             <p>Sample denoising results on test set (σ = 0.5):</p>
@@ -707,11 +892,15 @@
                 <div class="label">After 5 Epochs</div>
             </div>
             
-            <h5>Analysis</h5>
-            <p>The pure noise denoising outputs show that the model learns to 
+            <strong>Analysis</strong>
+            <p>The pure noise denoising output looks like a
+                mixture of all the digits which is just a light area in the middle.
+                It shows that the model learns to 
                 predict the average of the training distribution. The patterns 
                 observed are blurry, indistinct shapes that resemble an average 
-                of all MNIST digits rather than specific digits. This happens 
+                of all MNIST digits rather than specific digits. 
+                
+                <br> This happens 
                 because when the model is trained on pure noise with an L2 loss, 
                 it learns to predict the mean of the training distribution that 
                 minimizes the squared error. Since it's trained on noise without 
@@ -763,7 +952,7 @@
             <h4>Learning Rate Scheduler Ablation</h4>
             <p>To evaluate the necessity of the exponential learning rate scheduler, I conducted a controlled experiment comparing two training strategies for the class-conditional UNet:</p>
 
-            <h5>Strategy 1: With Exponential LR Scheduler</h5>
+            <strong>Strategy 1: With Exponential LR Scheduler</strong>
             <ul>
                 <li><strong>Initial Learning Rate:</strong> 1e-2 (higher initial rate)</li>
                 <li><strong>Scheduler:</strong> StepLR with step_size=5, gamma=0.5 (halves learning rate every 5 epochs)</li>
@@ -771,7 +960,7 @@
                 <li><strong>Gradient Handling:</strong> No gradient clipping</li>
             </ul>
 
-            <h5>Strategy 2: Without Scheduler (Modified Approach)</h5>
+            <strong>Strategy 2: Without Scheduler (Modified Approach)</strong>
             <ul>
                 <li><strong>Initial Learning Rate:</strong> 1e-3 (10x lower than Strategy 1)</li>
                 <li><strong>Scheduler:</strong> None (constant learning rate throughout training)</li>
@@ -780,16 +969,15 @@
                 <li><strong>Training Extension:</strong> Increased training to 8 epochs (vs 5 in scheduler approach) for better convergence</li>
             </ul>
 
-            <h5>Key Findings & Analysis:</h5>
+            <strong>Key Findings & Analysis:</strong>
             <p>The modified approach without a scheduler achieved comparable performance through several compensatory strategies:</p>
-            <ol>
+            <ul>
                 <li><strong>Lower Initial Learning Rate:</strong> Starting at 1e-3 instead of 1e-2 provided more stable training from the beginning, preventing the large fluctuations that typically require a scheduler to manage.</li>
                 <li><strong>Regularization Techniques:</strong> The addition of weight decay (2e-4) helped prevent overfitting and stabilized the training process without needing learning rate adjustments.</li>
                 <li><strong>Gradient Clipping:</strong> By limiting gradient norms to 1.0, I prevented explosive gradient updates that often necessitate learning rate reduction through schedulers.</li>
-                <li><strong>Extended Training:</strong> The model was trained for 8 epochs instead of 5, allowing it to converge more gradually to a similar final loss value.</li>
-            </ol>
-
-            <p>The results show that while the scheduler-based approach converges faster initially, the modified constant-LR strategy can achieve similar final performance through careful hyperparameter tuning and regularization. This demonstrates that learning rate schedulers are not strictly necessary but rather provide a convenient way to manage training dynamics that can also be achieved through other means.</p>
+            </ul>
+            <p>The results show that while the scheduler-based approach converges faster initially, the modified constant-LR strategy can achieve similar final performance through careful hyperparameter tuning and regularization. 
+                This demonstrates that learning rate schedulers are not strictly necessary but rather provide a convenient way to manage training dynamics that can also be achieved through other means.</p>
             <img src="proj5b/no_scheduler_loss.png" alt="Class-Conditioned Loss Curve without scheduler" style="max-width: 600px; margin: 20px auto; display: block;">
             
             <div class="figure-center">
@@ -806,18 +994,6 @@
             </div>
         </section>
         
-        
-        <section id="conclusionB">
-            <h2>Part B Conclusion</h2>
-            <p>In this part, we implemented and trained flow matching models from scratch. Key findings:</p>
-            <ul>
-                <li>Single-step denoising UNet works well for in-distribution noise levels but struggles with out-of-distribution noise</li>
-                <li>Pure noise denoising produces [YOUR FINDINGS]</li>
-                <li>Time-conditioned flow matching enables iterative denoising for generation</li>
-                <li>Class-conditioning improves control and convergence speed</li>
-                <li>Classifier-free guidance enhances output quality and class alignment</li>
-            </ul>
-        </section>
 
         
         <script>
